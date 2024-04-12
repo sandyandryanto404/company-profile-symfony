@@ -1,43 +1,70 @@
 <?php
 
+/**
+ * This file is part of the Sandy Andryanto Company Profile Website.
+ *
+ * @author     Sandy Andryanto <sandy.andryanto404@gmail.com>
+ * @copyright  2024
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE.md file that was distributed
+ * with this source code.
+ */
+
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use App\Entity\Group;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use DateTime;
 
-#[ORM\Table(name: "users", options: ["engine" => "InnoDB"])]
+#[ORM\Table(name: "users", options:["engine"=> "InnoDB"])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
-#[ORM\UniqueConstraint(columns: ["username"])]
-#[ORM\UniqueConstraint(columns: ["phone"])]
-#[ORM\Index(columns: ["password"])]
-#[ORM\Index(columns: ["status"])]
-#[ORM\Index(columns: ["created_at"])]
-#[ORM\Index(columns: ["updated_at"])]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_PHONE', fields: ['phone'])]
+#[ORM\Index(columns: ["email"])]
+#[ORM\Index(columns: ["phone"])]
+#[ORM\Index(columns: ["image"])]
 #[ORM\Index(columns: ["first_name"])]
 #[ORM\Index(columns: ["last_name"])]
 #[ORM\Index(columns: ["gender"])]
 #[ORM\Index(columns: ["country"])]
+#[ORM\Index(columns: ["password"])]
+#[ORM\Index(columns: ["reset_token"])]
+#[ORM\Index(columns: ["confirm_token"])]
+#[ORM\Index(columns: ["status"])]
+#[ORM\Index(columns: ["created_at"])]
+#[ORM\Index(columns: ["updated_at"])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public function __construct()
+    {
+        $this->createdAt = new DateTime();
+        $this->updatedAt = new DateTime();
+    }
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'bigint', options: ["unsigned" => true])]
-    private ?int $id = null;
+    private int $id;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private string $image;
+    #[ORM\Column(length: 180)]
+    private ?string $email = null;
 
-    #[ORM\Column(name:"first_name", length: 191, nullable: true)]
-    private string $firstName;
-
-    #[ORM\Column(name:"last_name", length: 191, nullable: true)]
-    private string $lastName;
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $phone = null;
 
     #[ORM\Column(length: 191, nullable: true)]
+    private string $image;
+
+    #[ORM\Column(name: "first_name", length: 64, nullable: true)]
+    private string $firstName;
+
+    #[ORM\Column(name: "last_name", length: 64, nullable: true)]
+    private string $lastName;
+
+    #[ORM\Column(length: 2, nullable: true)]
     private string $gender;
 
     #[ORM\Column(length: 191, nullable: true)]
@@ -46,27 +73,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'text', length: 65535, nullable: true)]
     private string $address;
 
-    #[ORM\Column(name:"about_me", type: 'text', length: 65535, nullable: true)]
+    #[ORM\Column(name: "about_me", type: 'text', length: 65535, nullable: true)]
     private string $aboutMe;
-
-    #[ORM\Column(length: 191)]
-    private string $username;
-
-    #[ORM\Column(length: 64)]
-    private string $phone;
-
-    #[ORM\Column(length: 180)]
-    private ?string $email = null;
-
-    #[ORM\JoinTable(name: 'users_groups', options: ["engine" => "InnoDB"])]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
-    #[ORM\InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
-    #[ORM\ManyToMany(targetEntity: Group::class)]
-    private Collection $groups;
-
-    public function __construct() {
-        $this->groups = new ArrayCollection();
-    }
 
     /**
      * @var list<string> The user roles
@@ -79,6 +87,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+    
+    #[ORM\Column(name:'reset_token', length: 191, nullable: true)]
+    private ?string $resetToken = null;
+
+    #[ORM\Column(name:'confirm_token', length: 191, nullable: true)]
+    private ?string $confirmToken = null;
 
     #[ORM\Column(type: 'smallint', options: ["unsigned" => true, "default"=> 0])]
     private int $status = 0;
@@ -88,200 +102,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: true)]
     private DateTime $updatedAt;
-
-    /**
-     * @return string
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    /**
-     * @param string $username
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPhone()
-    {
-        return $this->phone;
-    }
-
-    /**
-     * @param string $phone
-     */
-    public function setPhone($phone)
-    {
-        $this->phone = $phone;
-    }
-
-
-
-    /**
-     * @return string
-     */
-    public function getImage()
-    {
-        return $this->image;
-    }
-
-    /**
-     * @param string $image
-     */
-    public function setImage($image)
-    {
-        $this->image = $image;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFirstName()
-    {
-        return $this->firstName;
-    }
-
-    /**
-     * @param string $firstName
-     */
-    public function setFirstName($firstName)
-    {
-        $this->firstName = $firstName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLastName()
-    {
-        return $this->lastName;
-    }
-
-    /**
-     * @param string $lastName
-     */
-    public function setLastName($lastName)
-    {
-        $this->lastName = $lastName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGender()
-    {
-        return $this->gender;
-    }
-
-    /**
-     * @param string $gender
-     */
-    public function setGender($gender)
-    {
-        $this->gender = $gender;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCountry()
-    {
-        return $this->country;
-    }
-
-    /**
-     * @param string $country
-     */
-    public function setCountry($country)
-    {
-        $this->country = $country;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAddress()
-    {
-        return $this->address;
-    }
-
-    /**
-     * @param string $address
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAboutMe()
-    {
-        return $this->aboutMe;
-    }
-
-    /**
-     * @param string $aboutMe
-     */
-    public function setAboutMe($aboutMe)
-    {
-        $this->aboutMe = $aboutMe;
-    }
-
-    /**
-     * @return int
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
-     * @param int $status
-     */
-    public function setStatus($status)
-    {
-        $this->status = $status;
-    }
-
-    /**
-     * @return DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * @param DateTime $createdAt
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-    }
-
-    /**
-     * @return DateTime
-     */
-    public function getUpdatedAt()
-    {
-        return $this->updatedAt;
-    }
-
-    /**
-     * @param DateTime $updatedAt
-     */
-    public function setUpdatedAt($updatedAt)
-    {
-        $this->updatedAt = $updatedAt;
-    }
 
 
 
@@ -361,20 +181,314 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return ArrayCollection|Collection
+     * Get the value of phone
+     *
+     * @return ?string
      */
-    public function getGroups()
+    public function getPhone(): ?string
     {
-        return $this->groups;
+        return $this->phone;
     }
 
     /**
-     * @param ArrayCollection|Collection $groups
+     * Set the value of phone
+     *
+     * @param ?string $phone
+     *
+     * @return self
      */
-    public function setGroups($groups)
+    public function setPhone(?string $phone): self
     {
-        $this->groups = $groups;
+        $this->phone = $phone;
+
+        return $this;
     }
 
+    /**
+     * Get the value of status
+     *
+     * @return int
+     */
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
 
+    /**
+     * Set the value of status
+     *
+     * @param int $status
+     *
+     * @return self
+     */
+    public function setStatus(int $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of createdAt
+     *
+     * @return DateTime
+     */
+    public function getCreatedAt(): DateTime
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set the value of createdAt
+     *
+     * @param DateTime $createdAt
+     *
+     * @return self
+     */
+    public function setCreatedAt(DateTime $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of updatedAt
+     *
+     * @return DateTime
+     */
+    public function getUpdatedAt(): DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * Set the value of updatedAt
+     *
+     * @param DateTime $updatedAt
+     *
+     * @return self
+     */
+    public function setUpdatedAt(DateTime $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of resetToken
+     *
+     * @return ?string
+     */
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    /**
+     * Set the value of resetToken
+     *
+     * @param ?string $resetToken
+     *
+     * @return self
+     */
+    public function setResetToken(?string $resetToken): self
+    {
+        $this->resetToken = $resetToken;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of confirmToken
+     *
+     * @return ?string
+     */
+    public function getConfirmToken(): ?string
+    {
+        return $this->confirmToken;
+    }
+
+    /**
+     * Set the value of confirmToken
+     *
+     * @param ?string $confirmToken
+     *
+     * @return self
+     */
+    public function setConfirmToken(?string $confirmToken): self
+    {
+        $this->confirmToken = $confirmToken;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of image
+     *
+     * @return string
+     */
+    public function getImage(): string
+    {
+        return $this->image;
+    }
+
+    /**
+     * Set the value of image
+     *
+     * @param string $image
+     *
+     * @return self
+     */
+    public function setImage(string $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of firstName
+     *
+     * @return string
+     */
+    public function getFirstName(): string
+    {
+        return $this->firstName;
+    }
+
+    /**
+     * Set the value of firstName
+     *
+     * @param string $firstName
+     *
+     * @return self
+     */
+    public function setFirstName(string $firstName): self
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of lastName
+     *
+     * @return string
+     */
+    public function getLastName(): string
+    {
+        return $this->lastName;
+    }
+
+    /**
+     * Set the value of lastName
+     *
+     * @param string $lastName
+     *
+     * @return self
+     */
+    public function setLastName(string $lastName): self
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of gender
+     *
+     * @return string
+     */
+    public function getGender(): string
+    {
+        return $this->gender;
+    }
+
+    /**
+     * Set the value of gender
+     *
+     * @param string $gender
+     *
+     * @return self
+     */
+    public function setGender(string $gender): self
+    {
+        $this->gender = $gender;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of country
+     *
+     * @return string
+     */
+    public function getCountry(): string
+    {
+        return $this->country;
+    }
+
+    /**
+     * Set the value of country
+     *
+     * @param string $country
+     *
+     * @return self
+     */
+    public function setCountry(string $country): self
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of address
+     *
+     * @return string
+     */
+    public function getAddress(): string
+    {
+        return $this->address;
+    }
+
+    /**
+     * Set the value of address
+     *
+     * @param string $address
+     *
+     * @return self
+     */
+    public function setAddress(string $address): self
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of aboutMe
+     *
+     * @return string
+     */
+    public function getAboutMe(): string
+    {
+        return $this->aboutMe;
+    }
+
+    /**
+     * Set the value of aboutMe
+     *
+     * @param string $aboutMe
+     *
+     * @return self
+     */
+    public function setAboutMe(string $aboutMe): self
+    {
+        $this->aboutMe = $aboutMe;
+
+        return $this;
+    }
 }

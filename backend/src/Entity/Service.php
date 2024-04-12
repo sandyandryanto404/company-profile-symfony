@@ -1,9 +1,21 @@
 <?php
 
+/**
+ * This file is part of the Sandy Andryanto Company Profile Website.
+ *
+ * @author     Sandy Andryanto <sandy.andryanto404@gmail.com>
+ * @copyright  2024
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE.md file that was distributed
+ * with this source code.
+ */
+
 namespace App\Entity;
 
 use App\Repository\ServiceRepository;
 use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
 #[ORM\Table(name: "services", options: ["engine" => "InnoDB"])]
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
@@ -15,6 +27,12 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Index(columns: ["updated_at"])]
 class Service
 {
+    public function __construct()
+    {
+        $this->createdAt = new DateTime();
+        $this->updatedAt = new DateTime();
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'bigint', options: ["unsigned" => true])]
