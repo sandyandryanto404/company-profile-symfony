@@ -32,28 +32,27 @@ class ReferenceRepository extends ServiceEntityRepository
         parent::__construct($registry, Reference::class);
     }
 
-    //    /**
-    //     * @return Reference[] Returns an array of Reference objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('r.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findAllByRandomArticle($limit = 1)
+    {
+        return $this->createQueryBuilder('u')
+            ->addSelect('RAND() as HIDDEN rand')
+            ->andWhere('u.type != :val')
+            ->setParameter('val', 3)
+            ->setMaxResults($limit)
+            ->orderBy('rand()')
+            ->getQuery()
+            ->getResult();
+    }
 
-    //    public function findOneBySomeField($value): ?Reference
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findByRandom($type)
+    {
+         return $this->createQueryBuilder('u')
+            ->addSelect('RAND() as HIDDEN rand')
+            ->andWhere('u.type = :val')
+            ->setParameter('val', $type)
+            ->setMaxResults(1)
+            ->orderBy('rand()')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

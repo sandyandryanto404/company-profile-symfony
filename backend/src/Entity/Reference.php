@@ -17,7 +17,7 @@ use App\Repository\ReferenceRepository;
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;
 
-#[ORM\Table(name: "references", options: ["engine" => "InnoDB"])]
+#[ORM\Table(name: "`references`", options: ["engine" => "InnoDB"])]
 #[ORM\Entity(repositoryClass: ReferenceRepository::class)]
 #[ORM\Index(columns: ["slug"])]
 #[ORM\Index(columns: ["name"])]
