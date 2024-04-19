@@ -1,9 +1,21 @@
 <?php
 
+/**
+ * This file is part of the Sandy Andryanto Company Profile Website.
+ *
+ * @author     Sandy Andryanto <sandy.andryanto404@gmail.com>
+ * @copyright  2024
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE.md file that was distributed
+ * with this source code.
+ */
+
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
 use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
 #[ORM\Table(name: "articles", options: ["engine" => "InnoDB"])]
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
@@ -52,28 +64,14 @@ class Article
     #[ORM\JoinColumn(name: 'article_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'reference_id', referencedColumnName: 'id')]
     #[ORM\ManyToMany(targetEntity: Reference::class)]
-    private Collection $references;
+    private $references;
 
     public function __construct() {
-        $this->$references = new ArrayCollection();
+        $this->createdAt = new DateTime();
+        $this->updatedAt = new DateTime();
     }
 
-    /**
-     * @return Collection
-     */
-    public function getReferences()
-    {
-        return $this->references;
-    }
-
-    /**
-     * @param Collection $references
-     */
-    public function setReferences($references)
-    {
-        $this->references = $references;
-    }
-
+    
     /**
      * @return int
      */
@@ -235,4 +233,22 @@ class Article
     }
 
 
+
+    /**
+     * Get the value of references
+     */
+    public function getReferences()
+    {
+        return $this->references;
+    }
+
+    /**
+     * Set the value of references
+     */
+    public function setReferences($references): self
+    {
+        $this->references = $references;
+
+        return $this;
+    }
 }
