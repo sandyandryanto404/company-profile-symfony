@@ -1,23 +1,21 @@
 import { Component } from "react"
-import { NavLink, Navigate } from "react-router-dom"
+import { NavLink  } from "react-router-dom"
 
 class Navigation extends Component{
 
     constructor() {
         super();
         this.state = { 
-            redirectHome: false,
             active: '',
             siteTitle: '',
-            auth: true
+            auth: localStorage.getItem("token") !== null
         }
         this.handleLogout = this.handleLogout.bind(this)
     }
 
-    handleLogout(){
-       this.setState({
-           redirectHome: true
-       })
+    handleLogout(e){
+        window.location.href = "/"
+        e.preventDefault()
     }
 
     componentDidMount(){
@@ -57,7 +55,7 @@ class Navigation extends Component{
                                    <NavLink className="nav-link" to="/contact">Contact</NavLink>
                                 </li>
                                 <li className="nav-item dropdown">
-                                    <a className="nav-link dropdown-toggle" id="accountDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Account</a>
+                                    <a className="nav-link dropdown-toggle" id="accountDropdown" href="/#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Account</a>
                                     <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
                                         { this.state.auth ? <>
                                             <li>
@@ -71,7 +69,7 @@ class Navigation extends Component{
                                                 </NavLink>
                                             </li>
                                             <li>
-                                                <a href="/#" className="dropdown-item" onClick={this.handleLogout}>
+                                                <a className="dropdown-item" href="/#" onClick={(e) => this.handleLogout(e)}>
                                                     <i className="bi bi-power me-2"></i>Log Out
                                                 </a>
                                             </li>
@@ -93,9 +91,6 @@ class Navigation extends Component{
                         </div>
                     </div>
                 </nav>
-                { this.state.redirectHome ? <>
-                    <Navigate to="/#" replace={true} />
-                </> : <></> }
             </>
         )
     }

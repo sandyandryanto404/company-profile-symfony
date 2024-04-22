@@ -1,9 +1,20 @@
 import { Component } from "react"
+import { ShimmerThumbnail, ShimmerTitle, ShimmerPostItem  } from "react-shimmer-effects"
 
 class Home extends Component{
 
+    constructor() {
+        super();
+        this.state = { 
+            loading: true
+        }
+    }
+
     componentDidMount(){
         document.title = 'Home | ' + process.env.REACT_APP_TITLE
+        setTimeout(() => {
+            this.setState({ loading: false })
+        }, 3000)
     }
 
     render(){
@@ -22,7 +33,13 @@ class Home extends Component{
                                     </div>
                                 </div>
                             </div>
-                            <div className="col-xl-5 col-xxl-6 d-none d-xl-block text-center"><img className="img-fluid rounded-3 my-5" src="https://dummyimage.com/600x400/343a40/6c757d" alt="..." /></div>
+                            <div className="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                               { this.state.loading ? <>
+                                   <ShimmerThumbnail height={400} rounded />
+                               </> : <>
+                                    <img className="img-fluid rounded-3 my-5" src="https://dummyimage.com/600x400/343a40/6c757d" alt="..." />
+                               </> }
+                            </div>
                         </div>
                     </div>
                 </header>
@@ -33,26 +50,41 @@ class Home extends Component{
                             <div className="col-lg-4 mb-5 mb-lg-0"><h2 className="fw-bolder mb-0">A better way to start building.</h2></div>
                             <div className="col-lg-8">
                                 <div className="row gx-5 row-cols-1 row-cols-md-2">
-                                    <div className="col mb-5 h-100">
-                                        <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i className="bi bi-collection"></i></div>
-                                        <h2 className="h5">Featured title</h2>
-                                        <p className="mb-0">Paragraph of text beneath the heading to explain the heading. Here is just a bit more text.</p>
-                                    </div>
-                                    <div className="col mb-5 h-100">
-                                        <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i className="bi bi-building"></i></div>
-                                        <h2 className="h5">Featured title</h2>
-                                        <p className="mb-0">Paragraph of text beneath the heading to explain the heading. Here is just a bit more text.</p>
-                                    </div>
-                                    <div className="col mb-5 mb-md-0 h-100">
-                                        <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i className="bi bi-toggles2"></i></div>
-                                        <h2 className="h5">Featured title</h2>
-                                        <p className="mb-0">Paragraph of text beneath the heading to explain the heading. Here is just a bit more text.</p>
-                                    </div>
-                                    <div className="col h-100">
-                                        <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i className="bi bi-toggles2"></i></div>
-                                        <h2 className="h5">Featured title</h2>
-                                        <p className="mb-0">Paragraph of text beneath the heading to explain the heading. Here is just a bit more text.</p>
-                                    </div>
+                                    { this.state.loading ? <>
+                                        <div className="col mb-5 h-100">
+                                            <ShimmerTitle line={5} gap={10} variant="primary" />
+                                        </div>
+                                        <div className="col mb-5 h-100">
+                                            <ShimmerTitle line={5} gap={10} variant="primary" />
+                                        </div>
+                                        <div className="col mb-5 mb-md-0 h-100">
+                                            <ShimmerTitle line={5} gap={10} variant="primary" />
+                                        </div>
+                                        <div className="col h-100">
+                                            <ShimmerTitle line={5} gap={10} variant="primary" />
+                                        </div>
+                                    </> : <>
+                                        <div className="col mb-5 h-100">
+                                            <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i className="bi bi-collection"></i></div>
+                                            <h2 className="h5">Featured title</h2>
+                                            <p className="mb-0">Paragraph of text beneath the heading to explain the heading. Here is just a bit more text.</p>
+                                        </div>
+                                        <div className="col mb-5 h-100">
+                                            <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i className="bi bi-building"></i></div>
+                                            <h2 className="h5">Featured title</h2>
+                                            <p className="mb-0">Paragraph of text beneath the heading to explain the heading. Here is just a bit more text.</p>
+                                        </div>
+                                        <div className="col mb-5 mb-md-0 h-100">
+                                            <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i className="bi bi-toggles2"></i></div>
+                                            <h2 className="h5">Featured title</h2>
+                                            <p className="mb-0">Paragraph of text beneath the heading to explain the heading. Here is just a bit more text.</p>
+                                        </div>
+                                        <div className="col h-100">
+                                            <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i className="bi bi-toggles2"></i></div>
+                                            <h2 className="h5">Featured title</h2>
+                                            <p className="mb-0">Paragraph of text beneath the heading to explain the heading. Here is just a bit more text.</p>
+                                        </div>
+                                    </> }
                                 </div>
                             </div>
                         </div>
@@ -64,15 +96,19 @@ class Home extends Component{
                         <div className="row gx-5 justify-content-center">
                             <div className="col-lg-10 col-xl-7">
                                 <div className="text-center">
-                                    <div className="fs-4 mb-4 fst-italic">"Working with Start Bootstrap templates has saved me tons of development time when building new projects! Starting with a Bootstrap template just makes things easier!"</div>
-                                    <div className="d-flex align-items-center justify-content-center">
-                                        <img className="rounded-circle me-3" src="https://dummyimage.com/40x40/ced4da/6c757d" alt="..." />
-                                        <div className="fw-bold">
-                                            Tom Ato
-                                            <span className="fw-bold text-primary mx-1">/</span>
-                                            CEO, Pomodoro
+                                    { this.state.loading ? <>
+                                        <ShimmerTitle line={5} gap={10} variant="primary" />    
+                                    </> : <>
+                                        <div className="fs-4 mb-4 fst-italic">"Working with Start Bootstrap templates has saved me tons of development time when building new projects! Starting with a Bootstrap template just makes things easier!"</div>
+                                        <div className="d-flex align-items-center justify-content-center">
+                                            <img className="rounded-circle me-3" src="https://dummyimage.com/40x40/ced4da/6c757d" alt="..." />
+                                            <div className="fw-bold">
+                                                Tom Ato
+                                                <span className="fw-bold text-primary mx-1">/</span>
+                                                CEO, Pomodoro
+                                            </div>
                                         </div>
-                                    </div>
+                                    </> }
                                 </div>
                             </div>
                         </div>
@@ -90,69 +126,81 @@ class Home extends Component{
                             </div>
                         </div>
                         <div className="row gx-5">
-                            <div className="col-lg-4 mb-5">
-                                <div className="card h-100 shadow border-0">
-                                    <img className="card-img-top" src="https://dummyimage.com/600x350/ced4da/6c757d" alt="..." />
-                                    <div className="card-body p-4">
-                                        <div className="badge bg-primary bg-gradient rounded-pill mb-2">News</div>
-                                        <a className="text-decoration-none link-dark stretched-link" href="#!"><h5 className="card-title mb-3">Blog post title</h5></a>
-                                        <p className="card-text mb-0">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                    </div>
-                                    <div className="card-footer p-4 pt-0 bg-transparent border-top-0">
-                                        <div className="d-flex align-items-end justify-content-between">
-                                            <div className="d-flex align-items-center">
-                                                <img className="rounded-circle me-3" src="https://dummyimage.com/40x40/ced4da/6c757d" alt="..." />
-                                                <div className="small">
-                                                    <div className="fw-bold">Kelly Rowan</div>
-                                                    <div className="text-muted">March 12, 2023 &middot; 6 min read</div>
+                            { this.state.loading ? <>
+                                <div className="col-lg-4 mb-5">
+                                    <ShimmerPostItem card title text cta />
+                                </div>
+                                <div className="col-lg-4 mb-5">
+                                    <ShimmerPostItem card title text cta />
+                                </div>
+                                <div className="col-lg-4 mb-5">
+                                    <ShimmerPostItem card title text cta />
+                                </div>
+                            </> : <>
+                                <div className="col-lg-4 mb-5">
+                                    <div className="card h-100 shadow border-0">
+                                        <img className="card-img-top" src="https://dummyimage.com/600x350/ced4da/6c757d" alt="..." />
+                                        <div className="card-body p-4">
+                                            <div className="badge bg-primary bg-gradient rounded-pill mb-2">News</div>
+                                            <a className="text-decoration-none link-dark stretched-link" href="#!"><h5 className="card-title mb-3">Blog post title</h5></a>
+                                            <p className="card-text mb-0">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                        </div>
+                                        <div className="card-footer p-4 pt-0 bg-transparent border-top-0">
+                                            <div className="d-flex align-items-end justify-content-between">
+                                                <div className="d-flex align-items-center">
+                                                    <img className="rounded-circle me-3" src="https://dummyimage.com/40x40/ced4da/6c757d" alt="..." />
+                                                    <div className="small">
+                                                        <div className="fw-bold">Kelly Rowan</div>
+                                                        <div className="text-muted">March 12, 2023 &middot; 6 min read</div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="col-lg-4 mb-5">
-                                <div className="card h-100 shadow border-0">
-                                    <img className="card-img-top" src="https://dummyimage.com/600x350/adb5bd/495057" alt="..." />
-                                    <div className="card-body p-4">
-                                        <div className="badge bg-primary bg-gradient rounded-pill mb-2">Media</div>
-                                        <a className="text-decoration-none link-dark stretched-link" href="#!"><h5 className="card-title mb-3">Another blog post title</h5></a>
-                                        <p className="card-text mb-0">This text is a bit longer to illustrate the adaptive height of each card. Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                    </div>
-                                    <div className="card-footer p-4 pt-0 bg-transparent border-top-0">
-                                        <div className="d-flex align-items-end justify-content-between">
-                                            <div className="d-flex align-items-center">
-                                                <img className="rounded-circle me-3" src="https://dummyimage.com/40x40/ced4da/6c757d" alt="..." />
-                                                <div className="small">
-                                                    <div className="fw-bold">Josiah Barclay</div>
-                                                    <div className="text-muted">March 23, 2023 &middot; 4 min read</div>
+                                <div className="col-lg-4 mb-5">
+                                    <div className="card h-100 shadow border-0">
+                                        <img className="card-img-top" src="https://dummyimage.com/600x350/adb5bd/495057" alt="..." />
+                                        <div className="card-body p-4">
+                                            <div className="badge bg-primary bg-gradient rounded-pill mb-2">Media</div>
+                                            <a className="text-decoration-none link-dark stretched-link" href="#!"><h5 className="card-title mb-3">Another blog post title</h5></a>
+                                            <p className="card-text mb-0">This text is a bit longer to illustrate the adaptive height of each card. Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                        </div>
+                                        <div className="card-footer p-4 pt-0 bg-transparent border-top-0">
+                                            <div className="d-flex align-items-end justify-content-between">
+                                                <div className="d-flex align-items-center">
+                                                    <img className="rounded-circle me-3" src="https://dummyimage.com/40x40/ced4da/6c757d" alt="..." />
+                                                    <div className="small">
+                                                        <div className="fw-bold">Josiah Barclay</div>
+                                                        <div className="text-muted">March 23, 2023 &middot; 4 min read</div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="col-lg-4 mb-5">
-                                <div className="card h-100 shadow border-0">
-                                    <img className="card-img-top" src="https://dummyimage.com/600x350/6c757d/343a40" alt="..." />
-                                    <div className="card-body p-4">
-                                        <div className="badge bg-primary bg-gradient rounded-pill mb-2">News</div>
-                                        <a className="text-decoration-none link-dark stretched-link" href="#!"><h5 className="card-title mb-3">The last blog post title is a little bit longer than the others</h5></a>
-                                        <p className="card-text mb-0">Some more quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                    </div>
-                                    <div className="card-footer p-4 pt-0 bg-transparent border-top-0">
-                                        <div className="d-flex align-items-end justify-content-between">
-                                            <div className="d-flex align-items-center">
-                                                <img className="rounded-circle me-3" src="https://dummyimage.com/40x40/ced4da/6c757d" alt="..." />
-                                                <div className="small">
-                                                    <div className="fw-bold">Evelyn Martinez</div>
-                                                    <div className="text-muted">April 2, 2023 &middot; 10 min read</div>
+                                <div className="col-lg-4 mb-5">
+                                    <div className="card h-100 shadow border-0">
+                                        <img className="card-img-top" src="https://dummyimage.com/600x350/6c757d/343a40" alt="..." />
+                                        <div className="card-body p-4">
+                                            <div className="badge bg-primary bg-gradient rounded-pill mb-2">News</div>
+                                            <a className="text-decoration-none link-dark stretched-link" href="#!"><h5 className="card-title mb-3">The last blog post title is a little bit longer than the others</h5></a>
+                                            <p className="card-text mb-0">Some more quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                        </div>
+                                        <div className="card-footer p-4 pt-0 bg-transparent border-top-0">
+                                            <div className="d-flex align-items-end justify-content-between">
+                                                <div className="d-flex align-items-center">
+                                                    <img className="rounded-circle me-3" src="https://dummyimage.com/40x40/ced4da/6c757d" alt="..." />
+                                                    <div className="small">
+                                                        <div className="fw-bold">Evelyn Martinez</div>
+                                                        <div className="text-muted">April 2, 2023 &middot; 10 min read</div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </> }
                         </div>
                       
                         <aside className="bg-primary bg-gradient rounded-3 p-4 p-sm-5 mt-5">

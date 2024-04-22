@@ -28,8 +28,8 @@ class App extends Component {
                 <HashRouter>
                     <Navigation />
                     <Routes>
-                        <Route path="/" element={<Home />}/>
-                        <Route path="/about" element={<About />}/>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/about" element={<About />} />
                         <Route path="/contact" element={<Contact />}/>
                         <Route path="/faq" element={<Faq />}/>
                         <Route path="/service" element={<Service />}/>
