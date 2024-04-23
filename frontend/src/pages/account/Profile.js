@@ -11,6 +11,7 @@ class Profile extends Component{
             loading: true,
             auth: localStorage.getItem("token") !== null,
             countries: [],
+            imgPreview:"https://dummyimage.com/150x150/343a40/6c757d",
             fields: {
                 gender:"",
                 country:""
@@ -67,6 +68,19 @@ class Profile extends Component{
                                     </div>
                                     <div className="card-body">
                                         <form action="" method="POST" autoComplete="off">
+                                                <div className="row mt-4 mb-2 justify-content-center align-items-center">
+                                                    <div className="col-md-6">
+                                                        <div className="text-center">
+                                                            <h5>
+                                                                <small>Profile Picture</small>
+                                                            </h5>
+                                                            <img className="img-fluid rounded-3" src={this.state.imgPreview} alt="..." />
+                                                        </div>
+                                                        <div className="mb-3 mt-3">
+                                                            <input type="file" className="form-control" id="" placeholder="" name="file_image"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div className="row">
                                                     <div className="col-md-6">
                                                         <div className="mb-3 mt-3">
@@ -85,7 +99,7 @@ class Profile extends Component{
                                                                 <option value="F">Female</option>
                                                             </select>
                                                         </div>
-                                                </div>
+                                                    </div>
                                                 <div className="col-md-6">
                                                     <div className="mb-3 mt-3">
                                                         <label htmlFor="phone" className="form-label">Phone Number:</label>
