@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import Navigation from "./components/Navigation"
 import Footer from "./components/Footer"
+import Error from "./pages/Error"
 import Home from "./pages/Home"
 import About from "./pages/About"
 import Contact from "./pages/Contact"
@@ -19,6 +20,8 @@ import Login from "./pages/auth/Login"
 import Register from "./pages/auth/Register"
 import ForgotPassword from "./pages/auth/ForgotPassword"
 import ResetPassword from "./pages/auth/ResetPassword"
+import AccountProfile from "./pages/account/Profile"
+import AccountPassword from "./pages/account/Password"
 
 class App extends Component {
   render(){
@@ -40,7 +43,10 @@ class App extends Component {
                         <Route path="/auth/login" element={<Login />}/>
                         <Route path="/auth/register" element={<Register />}/>
                         <Route path="/auth/email/forgot" element={<ForgotPassword />}/>
-                        <Route path="/auth/email/reset" element={<ResetPassword />}/>
+                        <Route path="/auth/email/reset/:token" element={<ResetPassword />}/>
+                        <Route path="/account/profile" element={<AccountProfile />}/>
+                        <Route path="/account/password" element={<AccountPassword />}/>
+                        <Route path="*" element={<Error />}/>
                     </Routes>
                 </HashRouter>
             </main>

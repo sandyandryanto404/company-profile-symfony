@@ -55,3 +55,7 @@ body {
 .auth-section{
     background-color: #f8f9fa !important;
 }
+
+.font-error{
+    font-size: 10rem;
+}
