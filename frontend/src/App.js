@@ -22,6 +22,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword"
 import ResetPassword from "./pages/auth/ResetPassword"
 import AccountProfile from "./pages/account/Profile"
 import AccountPassword from "./pages/account/Password"
+import Unavailable from "./pages/Unavailable"
 
 class App extends Component {
   render(){
@@ -46,6 +47,7 @@ class App extends Component {
                         <Route path="/auth/email/reset/:token" element={<ResetPassword />}/>
                         <Route path="/account/profile" element={<AccountProfile />}/>
                         <Route path="/account/password" element={<AccountPassword />}/>
+                        <Route path="/unavailable" element={<Unavailable />} />
                         <Route path="*" element={<Error />}/>
                     </Routes>
                 </HashRouter>
