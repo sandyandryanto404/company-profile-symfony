@@ -104,7 +104,7 @@ php bin/console doctrine:fixtures:load
 php -S 0.0.0.0:8000 -t public
 ```
 
-#### 5. Install frontend dependencies, please move to directory company-profile-lumen/frontend
+#### 5. Install frontend dependencies, please move to directory company-profile-symfony/frontend
 ```shell
 npm install
 ```
