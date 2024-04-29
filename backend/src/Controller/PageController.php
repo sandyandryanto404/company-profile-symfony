@@ -163,4 +163,10 @@ class PageController extends BaseController
         return $this->respondWithSuccess("ok", [], $response);
     }
 
+    #[Route('api/page/subscribe', methods: ["POST"], name: 'page_subscribe')]
+    public function subscribe(Request $request) : JsonResponse 
+    {
+        return $this->respondWithSuccess("ok");
+    }
+
 }
