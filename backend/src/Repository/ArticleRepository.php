@@ -45,4 +45,63 @@ class ArticleRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function getStories($limit = 1){
+        return $this->createQueryBuilder('x')
+            ->select($this->columns())
+            ->andWhere('x.status = 1')
+            ->setMaxResults($limit)
+            ->orderBy('x.id', 'DESC')
+            ->innerJoin("x.user", "u")
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getNew(){
+        return $this->createQueryBuilder('x')
+            ->select($this->columns())
+            ->andWhere('x.status = 1')
+            ->orderBy('x.id', 'DESC')
+            ->innerJoin("x.user", "u")
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function getNews($id){
+        return $this->createQueryBuilder('x')
+            ->select($this->columns())
+            ->andWhere('x.id != :val')
+            ->andWhere('x.status = 1')
+            ->setParameter('val', $id)
+            ->innerJoin("x.user", "u")
+            ->setMaxResults(3)
+            ->orderBy('x.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findBySlug($slug){
+        return $this->createQueryBuilder('x')
+            ->select($this->columns())
+            ->andWhere('x.slug = :val')
+            ->setParameter('val', $slug)
+            ->innerJoin("x.user", "u")
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    private function columns(){
+        return [
+            "x.id", 
+            "x.slug", 
+            "x.title",
+            "x.description",
+            "x.createdAt",
+            "u.firstName",
+            "u.lastName",
+            "u.gender",
+            "u.aboutMe"
+        ];
+    }
 }

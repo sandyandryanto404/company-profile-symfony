@@ -24,13 +24,33 @@ class ArticleController extends BaseController
     #[Route('api/article/list', methods: ["GET"], name: 'article_list')]
     public function list(Request $request)
     {
+        $page = $request->get("page", 1);
+        $limit = 3 * $page;
+        $newArticle = $this->article->getNew();
+        $newArticles  = $this->article->getNews($newArticle["id"]);
+        $stories = $this->article->getStories($limit);
 
+        $response = array(
+            "new_article"=> $this->responseData($newArticle),
+            "new_articles"=> $this->responseData($newArticles),
+            "stories"=> $this->responseData($stories),
+            "page"=> $page,
+        );
+
+        return $this->respondWithSuccess("ok", [], ["data"=> $response]);
     }
 
     #[Route('api/article/detail/{slug}', methods: ["GET"], name: 'article_detail')]
     public function detail($slug)
     {
+        $article = $this->article->findBySlug($slug);
 
+        if(is_null($article)){
+            return $this->respondValidationError("Data not found with slug ".$slug);
+        } 
+
+        $article = $this->responseData($article);
+        return $this->respondWithSuccess("ok", [], ["article"=> $article]);
     }
 
     #[Route('api/article/comment/list/{id}', methods: ["GET"], name: 'article_comment_list')]

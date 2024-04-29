@@ -41,18 +41,42 @@ class ArticleCommentRepository extends ServiceEntityRepository
 
     public function buildComment($id)
     {
-        $entityManager =  $this->getEntityManager();
-        $rsm = new ResultSetMapping();
-        $query = $entityManager->createNativeQuery('SELECT id, email FROM users WHERE email = ?', $rsm);
-        $query->setParameter(1, 'Price.Casper@example.org');
-        
-        $users = $query->getResult();
-
-       return $users;
+        $sql = "
+            SELECT 
+                c.id, 
+                IFNULL(c.parent_id, 0) parent_id, 
+                c.comment, 
+                c.created_at,
+                u.first_name,
+                u.last_name,
+                u.gender,
+                u.image 
+            FROM articles_comments c
+            INNER JOIN users u ON u.id = c.user_id
+            WHERE c.article_id = ".$id."
+            ORDER BY c.id DESC
+        ";
+        $em = $this->getEntityManager();
+        $stmt = $em->getConnection()->prepare($sql);
+        $result = $stmt->executeQuery()->fetchAllAssociative();
+        return self::buildTree($result, 0);
     }
 
     private static function buildTree(array &$elements, $parentId = 0) {
-        
+        $branch = array();
+        foreach ($elements as $element) {
+            if ($element['parent_id'] == $parentId) {
+                $children = self::buildTree($elements, $element['id']);
+                if ($children) {
+                    $element['children'] = $children;
+                }else{
+                    $element['children'] = [];
+                }
+                $branch[] = $element;
+                unset($elements[$element['id']]);
+            }
+        }
+        return $branch;
     }
     
 }

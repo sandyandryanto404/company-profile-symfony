@@ -57,7 +57,7 @@ class PageController extends BaseController
     #[Route('api/page/ping', methods: ["GET"], name: 'page_ping')]
     public function ping() : JsonResponse 
     {
-        return $this->respondWithSuccess("Service has been conneted !!");
+        return $this->respondWithSuccess("ok");
     }
 
     #[Route('api/page/home', methods: ["GET"], name: 'page_home')]

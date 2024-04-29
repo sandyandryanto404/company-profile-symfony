@@ -51,8 +51,6 @@ class AccountController extends BaseController
             }
 
             $target_file = $uploadPath . basename($_FILES["file"]["name"]);
-            $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-            $check = getimagesize($_FILES["file"]["tmp_name"]);
             $temp = explode(".", $_FILES["file"]["name"]);
             $newfilename = md5($this->gen_uuid()) . '.' . strtolower(end($temp));
 

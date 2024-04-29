@@ -17,6 +17,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Ignore;
 use DateTime;
 
 #[ORM\Table(name: "users", options:["engine"=> "InnoDB"])]
@@ -85,6 +86,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      */
+
     #[ORM\Column]
     private ?string $password = null;
     
