@@ -49,6 +49,27 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
+    public function saveOrUpdate(User $user){
+        $this->getEntityManager()->persist($user);
+        $this->getEntityManager()->flush();
+    }
+
+    public function findByConfirmToken($token){
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.confirmToken = :val')
+            ->setParameter('val', $token)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findByEmail($email){
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.email = :val')
+            ->setParameter('val', $email)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function findByAnother($id, $limit = 1)
     {
         return $this->createQueryBuilder('u')

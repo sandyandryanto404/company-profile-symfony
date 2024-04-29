@@ -41,7 +41,7 @@ class PortfolioImage
     #[ORM\JoinColumn(name: 'portfolio_id', referencedColumnName: 'id')]
     private Portfolio $portfolio;
 
-    #[ORM\Column(length: 191)]
+    #[ORM\Column(length: 191, nullable: true)]
     private string $image;
 
     #[ORM\Column(type: 'smallint', options: ["unsigned" => true, "default"=> 0])]

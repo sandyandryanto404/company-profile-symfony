@@ -97,8 +97,12 @@ DATABASE_URL="mysql://db_user:db_password@127.0.0.1:3306/db_name?serverVersion=5
 ```shell
 sudo service mysqld start / sudo systemctl start mariadb
 CREATE DATABASE {database-name}
+mkdir config/jwt
+bin/console lexik:jwt:generate-keypair
 openssl genrsa -out config/jwt/private.pem 4096
 openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
+cp Company.php.fix vendor/fzaninotto/faker/src/Faker/Provider/en_US/Company.php
+cp Lorem.php.fix vendor/fzaninotto/faker/src/Faker/Provider/Lorem.php
 php bin/console doctrine:migrations:migrate
 php bin/console doctrine:fixtures:load
 php -S 0.0.0.0:8000 -t public
