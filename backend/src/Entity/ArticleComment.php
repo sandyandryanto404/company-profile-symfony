@@ -40,7 +40,7 @@ class ArticleComment
 
     #[ORM\ManyToOne(targetEntity: ArticleComment::class, inversedBy: 'children')]
     #[ORM\JoinColumn(name: 'parent_id', referencedColumnName: 'id')]
-    private ArticleComment $parent;
+    private ?ArticleComment $parent = null;
 
     #[ORM\ManyToOne(targetEntity: Article::class)]
     #[ORM\JoinColumn(name: 'article_id', referencedColumnName: 'id')]

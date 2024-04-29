@@ -56,7 +56,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $phone = null;
 
     #[ORM\Column(length: 191, nullable: true)]
-    private string $image;
+    private ?string $image = null;
 
     #[ORM\Column(name: "first_name", length: 64, nullable: true)]
     private string $firstName;
@@ -324,29 +324,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Get the value of image
-     *
-     * @return string
-     */
-    public function getImage(): string
-    {
-        return $this->image;
-    }
-
-    /**
-     * Set the value of image
-     *
-     * @param string $image
-     *
-     * @return self
-     */
-    public function setImage(string $image): self
-    {
-        $this->image = $image;
-
-        return $this;
-    }
+    
 
     /**
      * Get the value of firstName
@@ -488,6 +466,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAboutMe(string $aboutMe): self
     {
         $this->aboutMe = $aboutMe;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of image
+     */ 
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * Set the value of image
+     *
+     * @return  self
+     */ 
+    public function setImage($image)
+    {
+        $this->image = $image;
 
         return $this;
     }

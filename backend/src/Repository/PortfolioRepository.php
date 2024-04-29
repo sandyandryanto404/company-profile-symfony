@@ -32,28 +32,15 @@ class PortfolioRepository extends ServiceEntityRepository
         parent::__construct($registry, Portfolio::class);
     }
 
-    //    /**
-    //     * @return Portfolio[] Returns an array of Portfolio objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Portfolio
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findByRandom($status = 0,  $limit = 1)
+    {
+        return $this->createQueryBuilder('u')
+            ->addSelect('RAND() as HIDDEN rand')
+            ->andWhere('u.status = :status')
+            ->setParameter('status', $status)
+            ->setMaxResults($limit)
+            ->orderBy('rand()')
+            ->getQuery()
+            ->getResult();
+    }
 }

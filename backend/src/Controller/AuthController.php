@@ -9,7 +9,6 @@ use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-use App\Helper\MyHelper;
 
 class AuthController extends BaseController
 {
@@ -81,7 +80,7 @@ class AuthController extends BaseController
 
         $passwordHasher = $this->passwordHasherFactory->getPasswordHasher(User::class);
         $hash = $passwordHasher->hash($password);
-        $token = MyHelper::genUUID();
+        $token = $this->gen_uuid();
         $token = md5($token);
 
         $user = new User();
@@ -129,7 +128,7 @@ class AuthController extends BaseController
             return $this->respondWithErrors("We can't find a user with that e-mail address or password reset token is invalid.!");
         }
 
-        $token = MyHelper::genUUID();
+        $token = $this->gen_uuid();
         $token = md5($token);
         $user->setResetToken($token);
         $this->userRepo->saveOrUpdate($user);

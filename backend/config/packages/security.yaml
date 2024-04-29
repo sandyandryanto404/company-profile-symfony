@@ -28,6 +28,9 @@ security:
     access_control:
         - { path: ^/api/auth,  roles: PUBLIC_ACCESS  }
         - { path: ^/api/page,  roles: PUBLIC_ACCESS  }
+        - { path: ^/api/portfolio,  roles: PUBLIC_ACCESS  }
+        - { path: ^/api/article,  roles: PUBLIC_ACCESS  }
+        - { path: ^/api/article/comment/create,  roles: IS_AUTHENTICATED_FULLY  }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

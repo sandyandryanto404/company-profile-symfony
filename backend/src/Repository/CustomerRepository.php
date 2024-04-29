@@ -32,12 +32,24 @@ class CustomerRepository extends ServiceEntityRepository
         parent::__construct($registry, Customer::class);
     }
 
-     public function findByRandom(){
+    public function findByRandom(){
          return $this->createQueryBuilder('u')
             ->addSelect('RAND() as HIDDEN rand')
             ->setMaxResults(1)
             ->orderBy('rand()')
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function findByRandomResult($status = 0,  $limit = 1)
+    {
+        return $this->createQueryBuilder('u')
+            ->addSelect('RAND() as HIDDEN rand')
+            ->andWhere('u.status = :status')
+            ->setParameter('status', $status)
+            ->setMaxResults($limit)
+            ->orderBy('rand()')
+            ->getQuery()
+            ->getResult();
     }
 }

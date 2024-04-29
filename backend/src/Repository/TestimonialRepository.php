@@ -32,28 +32,15 @@ class TestimonialRepository extends ServiceEntityRepository
         parent::__construct($registry, Testimonial::class);
     }
 
-    //    /**
-    //     * @return Testimonial[] Returns an array of Testimonial objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('t.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Testimonial
-    //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findByRandom($status = 0,  $limit = 1)
+    {
+        return $this->createQueryBuilder('u')
+            ->addSelect('RAND() as HIDDEN rand')
+            ->andWhere('u.status = :status')
+            ->setParameter('status', $status)
+            ->setMaxResults($limit)
+            ->orderBy('rand()')
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -32,28 +32,13 @@ class FaqRepository extends ServiceEntityRepository
         parent::__construct($registry, Faq::class);
     }
 
-    //    /**
-    //     * @return Faq[] Returns an array of Faq objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('f.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Faq
-    //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findAllBySort($op, $sort = 0)
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.sort '.$op.' :sort')
+            ->setParameter('sort', $sort)
+            ->orderBy('u.sort')
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -15,7 +15,9 @@ namespace App\Repository;
 
 use App\Entity\ArticleComment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 /**
  * @extends ServiceEntityRepository<ArticleComment>
@@ -32,28 +34,25 @@ class ArticleCommentRepository extends ServiceEntityRepository
         parent::__construct($registry, ArticleComment::class);
     }
 
-    //    /**
-    //     * @return ArticleComment[] Returns an array of ArticleComment objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('a.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function saveOrUpdate(ArticleComment $contact){
+        $this->getEntityManager()->persist($contact);
+        $this->getEntityManager()->flush();
+    }
 
-    //    public function findOneBySomeField($value): ?ArticleComment
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function buildComment($id)
+    {
+        $entityManager =  $this->getEntityManager();
+        $rsm = new ResultSetMapping();
+        $query = $entityManager->createNativeQuery('SELECT id, email FROM users WHERE email = ?', $rsm);
+        $query->setParameter(1, 'Price.Casper@example.org');
+        
+        $users = $query->getResult();
+
+       return $users;
+    }
+
+    private static function buildTree(array &$elements, $parentId = 0) {
+        
+    }
+    
 }

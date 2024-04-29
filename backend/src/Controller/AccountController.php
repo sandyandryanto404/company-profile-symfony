@@ -37,7 +37,32 @@ class AccountController extends BaseController
         $image = $user->getImage();
 
         if(isset(($_FILES["file"]["name"]))){
-            
+
+            $uploadPath = $this->getParameter('kernel.project_dir') . '/public/uploads'; 
+            if(!is_dir($uploadPath)){
+                @mkdir($uploadPath);
+            }
+
+            if(!is_null($user->getImage())){
+                $file_path_current = $this->getParameter('kernel.project_dir') . '/public/'.$user->getImage(); 
+                if(file_exists($file_path_current)){
+                    @unlink($file_path_current);
+                }
+            }
+
+            $target_file = $uploadPath . basename($_FILES["file"]["name"]);
+            $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+            $check = getimagesize($_FILES["file"]["tmp_name"]);
+            $temp = explode(".", $_FILES["file"]["name"]);
+            $newfilename = md5($this->gen_uuid()) . '.' . strtolower(end($temp));
+
+            if (move_uploaded_file($_FILES["file"]["tmp_name"], $uploadPath."/".$newfilename)) {
+                $result_upload = "uploads/".$newfilename;
+                $user->setImage($result_upload);
+                $this->userRepo->saveOrUpdate($user);
+                $image = $result_upload;
+            }
+
         }
 
         return $this->respondWithSuccess("Yor profile picture has been changed !!", [], ["image"=> $image]);
