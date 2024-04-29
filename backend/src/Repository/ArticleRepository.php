@@ -91,6 +91,11 @@ class ArticleRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function checkContinue($limit = 0){
+        $total = (int) $this->createQueryBuilder('x')->select('count(x.id)')->where("x.status = 1")->getQuery()->getSingleScalarResult();
+        return $limit <= $total;
+    }
+
     private function columns(){
         return [
             "x.id", 

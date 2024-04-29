@@ -29,8 +29,10 @@ class ArticleController extends BaseController
         $newArticle = $this->article->getNew();
         $newArticles  = $this->article->getNews($newArticle["id"]);
         $stories = $this->article->getStories($limit);
+        $continueArticle = $this->article->checkContinue($limit);
 
         $response = array(
+            "continue"=> $continueArticle,
             "new_article"=> $this->responseData($newArticle),
             "new_articles"=> $this->responseData($newArticles),
             "stories"=> $this->responseData($stories),
