@@ -50,6 +50,7 @@ class PageController extends BaseController
         $this->slider = $_slider;
         $this->team = $_team;
         $this->testimonial = $_testimonial;
+        $this->slider = $_slider;
     }
 
 
@@ -64,16 +65,18 @@ class PageController extends BaseController
     public function home() : JsonResponse 
     {
         $faker = Factory::create();
-        $services = $this->service->findByRandom(1, 100);
-        $customers = $this->customer->findByRandomResult(1, 100);
-        $testimonials = $this->testimonial->findByRandom(1, 100);
+        $services = $this->service->findByRandom(1, 4);
+        $articles = $this->article->findByRandomResult(1, 3);
+        $testimonials = $this->testimonial->findByRandom(1, 1);
+        $sliders = $this->slider->getAll();
         $response = array(
             "header"=> array(
                 "title"=> $faker->sentence(5),
                 "description"=> $faker->text()
             ),
+            "sliders"=> $this->responseData($sliders),
             "services"=> $this->responseData($services),
-            "customers"=> $this->responseData($customers),
+            "articles"=> $this->responseData($articles),
             "testimonials"=> $this->responseData($testimonials)
         );
         return $this->respondWithSuccess("ok", [], $response);

@@ -32,6 +32,18 @@ class ArticleRepository extends ServiceEntityRepository
         parent::__construct($registry, Article::class);
     }
 
+    public function findByRandomResult($status = 0,  $limit = 1)
+    {
+        return $this->createQueryBuilder('u')
+            ->addSelect('RAND() as HIDDEN rand')
+            ->andWhere('u.status = :status')
+            ->setParameter('status', $status)
+            ->setMaxResults($limit)
+            ->orderBy('rand()')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findByRandom($id, $status = 0,  $limit = 1)
     {
         return $this->createQueryBuilder('u')

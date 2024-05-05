@@ -32,28 +32,12 @@ class SliderRepository extends ServiceEntityRepository
         parent::__construct($registry, Slider::class);
     }
 
-    //    /**
-    //     * @return Slider[] Returns an array of Slider objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Slider
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function getAll()
+    {
+        return $this->createQueryBuilder('x')
+            ->andWhere('x.status = 1')
+            ->orderBy('x.sort')
+            ->getQuery()
+            ->getResult();
+    }
 }

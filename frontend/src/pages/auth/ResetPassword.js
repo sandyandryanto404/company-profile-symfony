@@ -1,6 +1,7 @@
 import { Component } from "react"
 import { ShimmerThumbnail } from "react-shimmer-effects"
 import { Tooltip } from 'react-tooltip'
+import { withRouter } from '../../helpers/with-router';
 
 class ResetPassword extends Component{
 
@@ -15,7 +16,7 @@ class ResetPassword extends Component{
     componentDidMount(){
         if(this.state.auth){
             setTimeout(() => {
-                window.location.href = "/"
+                this.props.router.navigate("/")
             }, 3000)
         }else{
             setTimeout(() => {
@@ -83,4 +84,4 @@ class ResetPassword extends Component{
 
 }
 
-export default ResetPassword
+export default withRouter(ResetPassword)

@@ -2,6 +2,7 @@ import { Component } from "react"
 import { NavLink  } from "react-router-dom"
 import { ShimmerThumbnail } from "react-shimmer-effects"
 import { Tooltip } from 'react-tooltip'
+import { withRouter } from '../../helpers/with-router';
 
 class Register extends Component{
 
@@ -16,7 +17,7 @@ class Register extends Component{
     componentDidMount(){
         if(this.state.auth){
             setTimeout(() => {
-                window.location.href = "/"
+                this.props.router.navigate("/")
             }, 3000)
         }else{
             setTimeout(() => {
@@ -90,4 +91,4 @@ class Register extends Component{
 
 }
 
-export default Register
+export default withRouter(Register)

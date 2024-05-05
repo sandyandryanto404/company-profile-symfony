@@ -1,21 +1,56 @@
 import { Component } from "react"
 import { ShimmerTitle, ShimmerPostItem, ShimmerCircularImage, ShimmerSectionHeader   } from "react-shimmer-effects"
+import { withRouter } from '../helpers/with-router';
+import PageService from "../services/page";
 
 class Service extends Component{
 
     constructor() {
         super();
         this.state = { 
-            loading: true
+            loading: true,
+            content: {}
         }
     }
 
-    componentDidMount(){
+    componentWillMount(){
         document.title = 'Service | ' + process.env.REACT_APP_TITLE
-        setTimeout(() => {
-            this.setState({ loading: false })
-        }, 3000)
+        this.pingConnection()
     }
+
+    async pingConnection(){
+        await PageService.ping().then(() => {
+            setTimeout(() => { 
+                this.loadContent()
+            }, 1500)
+        }).catch((error) => {
+            console.log(error)
+            this.props.router.navigate("/unavailable")
+        })
+    }
+
+    async loadContent(){
+        await PageService.service().then((response) => {
+            setTimeout(() => { 
+                this.setState({
+                    content: response.data,
+                    loading: false
+                })
+            }, 1500)
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+
+    getRate(){
+        var result = ""
+        let max = (Math.floor(Math.random() * 20) + 1)
+        for(var i = 1; i <= max; i++){
+            result += `<i class="bi bi-star text-warning me-2"></i>`
+        }
+        return result
+    }
+  
 
     render(){
         return (
@@ -30,11 +65,8 @@ class Service extends Component{
                             </> : <>
                                 <div className="col-lg-8 col-xxl-6">
                                     <div className="text-center my-5">
-                                        <h1 className="fw-bolder mb-3">Our mission is to make building websites easier for everyone.</h1>
-                                        <p className="lead fw-normal text-muted mb-4">Start Bootstrap was built on the idea that quality,
-                                            functional website templates and themes should be available to everyone. Use our open
-                                            source, free products, or support us by purchasing one of our premium products or services.
-                                        </p>
+                                        <h1 className="fw-bolder mb-3">{this.state.content.header.title}</h1>
+                                        <p className="lead fw-normal text-muted mb-4">{this.state.content.header.description}</p>
                                         <a className="btn btn-primary btn-lg" href="#scroll-target">Read our story</a>
                                     </div>
                                 </div>
@@ -66,34 +98,16 @@ class Service extends Component{
                                     </div>
                                 </> : <>
                                     <div className="row gx-5 row-cols-1 row-cols-md-2">
-                                        <div className="col mb-5 h-100">
-                                            <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i
-                                                    className="bi bi-collection"></i></div>
-                                            <h2 className="h5">Featured title</h2>
-                                            <p className="mb-0">Paragraph of text beneath the heading to explain the heading. Here
-                                                is just a bit more text.</p>
-                                        </div>
-                                        <div className="col mb-5 h-100">
-                                            <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i
-                                                    className="bi bi-building"></i></div>
-                                            <h2 className="h5">Featured title</h2>
-                                            <p className="mb-0">Paragraph of text beneath the heading to explain the heading. Here
-                                                is just a bit more text.</p>
-                                        </div>
-                                        <div className="col mb-5 mb-md-0 h-100">
-                                            <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i
-                                                    className="bi bi-toggles2"></i></div>
-                                            <h2 className="h5">Featured title</h2>
-                                            <p className="mb-0">Paragraph of text beneath the heading to explain the heading. Here
-                                                is just a bit more text.</p>
-                                        </div>
-                                        <div className="col h-100">
-                                            <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i
-                                                    className="bi bi-toggles2"></i></div>
-                                            <h2 className="h5">Featured title</h2>
-                                            <p className="mb-0">Paragraph of text beneath the heading to explain the heading. Here
-                                                is just a bit more text.</p>
-                                        </div>
+                                        {this.state.content.services.map((item,index)=>{
+                                            return (
+                                                <div key={index} className={"col mb-5 h-100"}>
+                                                    <div className="feature bg-primary bg-gradient text-white rounded-3 mb-3">
+                                                        <i className={item.icon}></i></div>
+                                                    <h2 className="h5">{item.title}</h2>
+                                                    <p className="mb-0">{item.description}</p>
+                                                </div>
+                                            )
+                                        })}
                                     </div>
                                 </> }
                             </div>
@@ -133,38 +147,17 @@ class Service extends Component{
                                     </div>
                                 </div>
                             </> : <>
-                                <div className="col mb-5 mb-5 mb-xl-0">
-                                    <div className="text-center">
-                                        <img className="img-fluid rounded-circle mb-4 px-4"
-                                            src="https://dummyimage.com/150x150/ced4da/6c757d" alt="..." />
-                                        <h5 className="fw-bolder">Ibbie Eckart</h5>
-                                        <div className="fst-italic text-muted">Founder &amp; CEO</div>
-                                    </div>
-                                </div>
-                                <div className="col mb-5 mb-5 mb-xl-0">
-                                    <div className="text-center">
-                                        <img className="img-fluid rounded-circle mb-4 px-4"
-                                            src="https://dummyimage.com/150x150/ced4da/6c757d" alt="..." />
-                                        <h5 className="fw-bolder">Arden Vasek</h5>
-                                        <div className="fst-italic text-muted">CFO</div>
-                                    </div>
-                                </div>
-                                <div className="col mb-5 mb-5 mb-sm-0">
-                                    <div className="text-center">
-                                        <img className="img-fluid rounded-circle mb-4 px-4"
-                                            src="https://dummyimage.com/150x150/ced4da/6c757d" alt="..." />
-                                        <h5 className="fw-bolder">Toribio Nerthus</h5>
-                                        <div className="fst-italic text-muted">Operations Manager</div>
-                                    </div>
-                                </div>
-                                <div className="col mb-5">
-                                    <div className="text-center">
-                                        <img className="img-fluid rounded-circle mb-4 px-4"
-                                            src="https://dummyimage.com/150x150/ced4da/6c757d" alt="..." />
-                                        <h5 className="fw-bolder">Malvina Cilla</h5>
-                                        <div className="fst-italic text-muted">CTO</div>
-                                    </div>
-                                </div>
+                                {this.state.content.customers.map((item,index)=>{
+                                    return (
+                                        <div key={index} className="col mb-5 mb-5 mb-xl-0">
+                                            <div className="text-center mb-3">
+                                                <img className="img-fluid rounded-circle mb-4 px-4" src={"https://picsum.photos/id/"+(Math.floor(Math.random() * 100) + 0)+"/150/150"} alt="..." />
+                                                <h5 className="fw-bolder">{item.name}</h5>
+                                                <div className="fst-italic text-muted">{item.address}</div>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
                             </> }        
                         </div>            
                     </div>               
@@ -196,83 +189,25 @@ class Service extends Component{
                             
                             </> : <>
                                 
-                                <div className="col-12 col-md-4">
-                                    <div className="card border-0 border-bottom border-primary shadow-sm">
-                                        <div className="card-body p-4 p-xxl-5">
-                                            <figure>
-                                                <img className="img-fluid rounded rounded-circle mb-4 border border-5" loading="lazy" src="https://dummyimage.com/150x150/ced4da/6c757d" alt=""/>
-                                                <figcaption>
-                                                    <div className="mb-3 mt-2">
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                    </div>
-                                                    <blockquote className="bsb-blockquote-icon mb-4">Nam ultricies, ex lacinia dapibus
-                                                        faucibus, sapien ipsum euismod massa, at aliquet erat turpis quis diam. Class
-                                                        aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
-                                                        himenaeos.</blockquote>
-                                                    <h4 className="mb-2">Luna John</h4>
-                                                    <h5 className="fs-6 text-secondary mb-0">UX Designer</h5>
-                                                </figcaption>
-                                            </figure>
+                                {this.state.content.testimonials.map((item,index)=>{
+                                    return (
+                                        <div key={index} className="col-12 col-md-4 mb-4">
+                                            <div className="card border-0 border-bottom border-primary shadow-sm">
+                                                <div className="card-body p-4 p-xxl-5">
+                                                    <figure>
+                                                        <img className="img-fluid rounded rounded-circle mb-4 border border-5" loading="lazy" src={"https://picsum.photos/id/"+(Math.floor(Math.random() * 100) + 0)+"/150/150"} alt=""/>
+                                                        <figcaption>
+                                                            <div className="mb-3 mt-2"  dangerouslySetInnerHTML={{ __html: this.getRate() }}></div>
+                                                            <blockquote className="bsb-blockquote-icon mb-4">{item.quote}</blockquote>
+                                                            <h4 className="mb-2">{item.name}</h4>
+                                                            <h5 className="fs-6 text-secondary mb-0">{item.positionName}</h5>
+                                                        </figcaption>
+                                                    </figure>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <div className="col-12 col-md-4">
-                                    <div className="card border-0 border-bottom border-primary shadow-sm">
-                                        <div className="card-body p-4 p-xxl-5">
-                                            <figure>
-                                                <img className="img-fluid rounded rounded-circle mb-4 border border-5" loading="lazy" src="https://dummyimage.com/150x150/ced4da/6c757d" alt=""/>
-                                                <figcaption>
-                                                    <div className="mb-3 mt-2">
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                    </div>
-                                                    <blockquote className="bsb-blockquote-icon mb-4">Nam ultricies, ex lacinia dapibus
-                                                        faucibus, sapien ipsum euismod massa, at aliquet erat turpis quis diam. Class
-                                                        aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
-                                                        himenaeos.</blockquote>
-                                                    <h4 className="mb-2">Luna John</h4>
-                                                    <h5 className="fs-6 text-secondary mb-0">UX Designer</h5>
-                                                </figcaption>
-                                            </figure>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="col-12 col-md-4">
-                                    <div className="card border-0 border-bottom border-primary shadow-sm">
-                                        <div className="card-body p-4 p-xxl-5">
-                                            <figure>
-                                                <img className="img-fluid rounded rounded-circle mb-4 border border-5" loading="lazy" src="https://dummyimage.com/150x150/ced4da/6c757d" alt=""/>
-                                                <figcaption>
-                                                    <div className="mb-3 mt-2">
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                        <i className="bi bi-star text-warning me-2"></i>
-                                                    </div>
-                                                    <blockquote className="bsb-blockquote-icon mb-4">Nam ultricies, ex lacinia dapibus
-                                                        faucibus, sapien ipsum euismod massa, at aliquet erat turpis quis diam. Class
-                                                        aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
-                                                        himenaeos.</blockquote>
-                                                    <h4 className="mb-2">Luna John</h4>
-                                                    <h5 className="fs-6 text-secondary mb-0">UX Designer</h5>
-                                                </figcaption>
-                                            </figure>
-                                        </div>
-                                    </div>
-                                </div>
+                                    )
+                                })}
 
                             </> }
                         </div>
@@ -284,4 +219,4 @@ class Service extends Component{
 
 }
 
-export default Service
+export default withRouter(Service)

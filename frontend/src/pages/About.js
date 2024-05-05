@@ -1,20 +1,62 @@
 import { Component } from "react"
 import { ShimmerTitle, ShimmerThumbnail, ShimmerCircularImage, ShimmerSectionHeader   } from "react-shimmer-effects"
+import { withRouter } from '../helpers/with-router';
+import PageService from "../services/page";
 
 class About extends Component{
 
     constructor() {
         super();
         this.state = { 
-            loading: true
+            loading: true,
+            content: {}
         }
     }
 
-    componentDidMount(){
+    componentWillMount(){
         document.title = 'About | ' + process.env.REACT_APP_TITLE
-        setTimeout(() => {
-            this.setState({ loading: false })
-        }, 3000)
+        this.pingConnection()
+    }
+
+    async pingConnection(){
+        await PageService.ping().then(() => {
+            setTimeout(() => { 
+                this.loadContent()
+            }, 1500)
+        }).catch((error) => {
+            console.log(error)
+            this.props.router.navigate("/unavailable")
+        })
+    }
+
+    async loadContent(){
+        await PageService.about().then((response) => {
+            setTimeout(() => { 
+                this.setState({
+                    content: response.data,
+                    loading: false
+                })
+            }, 1500)
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+
+    getPeopleImage(){
+        let arrs = ["male.png", "female.png"]
+        let random = Math.floor(Math.random() * arrs.length)
+        let result = arrs[random]
+        return "/"+result
+    }
+
+    getClassName(index){
+        if(parseInt(index) <= 1){
+            return "col mb-5 mb-5 mb-xl-0"
+        }else if(parseInt(index) === 2){
+            return "col mb-5 mb-5 mb-sm-0"
+        }else{
+            return "col mb-5"
+        }
     }
 
     render(){
@@ -28,11 +70,8 @@ class About extends Component{
                                     <ShimmerTitle line={5} gap={15} variant="primary" />    
                                 </> : <>
                                     <div className="text-center my-5">
-                                        <h1 className="fw-bolder mb-3">Our mission is to make building websites easier for everyone.</h1>
-                                        <p className="lead fw-normal text-muted mb-4">Start Bootstrap was built on the idea that quality,
-                                            functional website templates and themes should be available to everyone. Use our open
-                                            source, free products, or support us by purchasing one of our premium products or services.
-                                        </p>
+                                        <h1 className="fw-bolder mb-3">{this.state.content.header.title}</h1>
+                                        <p className="lead fw-normal text-muted mb-4">{this.state.content.header.description}</p>
                                         <a className="btn btn-primary btn-lg" href="#scroll-target">Read our story</a>
                                     </div>
                                 </> }
@@ -51,12 +90,10 @@ class About extends Component{
                                     <ShimmerTitle line={5} gap={15} variant="primary" />    
                                 </div>
                              </> : <>
-                                <div className="col-lg-6"><img className="img-fluid rounded mb-5 mb-lg-0"  src="https://dummyimage.com/600x400/343a40/6c757d" alt="..." /></div>
+                                <div className="col-lg-6"><img className="img-fluid rounded mb-5 mb-lg-0"  src={"https://picsum.photos/id/"+(Math.floor(Math.random() * 100) + 0)+"/600/400"} alt="..." /></div>
                                 <div className="col-lg-6">
-                                    <h2 className="fw-bolder">Our founding</h2>
-                                    <p className="lead fw-normal text-muted mb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                        Iusto est, ut esse a labore aliquam beatae expedita. Blanditiis impedit numquam libero molestiae
-                                        et fugit cupiditate, quibusdam expedita, maiores eaque quisquam.</p>
+                                    <h2 className="fw-bolder">{this.state.content.section1.title}</h2>
+                                    <p className="lead fw-normal text-muted mb-0">{this.state.content.section1.description}</p>
                                 </div>
                              </> }
                          </div>
@@ -73,12 +110,10 @@ class About extends Component{
                                     <ShimmerTitle line={5} gap={15} variant="primary" />    
                                 </div>
                               </> : <>
-                                <div className="col-lg-6 order-first order-lg-last"><img className="img-fluid rounded mb-5 mb-lg-0"  src="https://dummyimage.com/600x400/343a40/6c757d" alt="..." /></div>
+                                <div className="col-lg-6 order-first order-lg-last"><img className="img-fluid rounded mb-5 mb-lg-0"  src={"https://picsum.photos/id/"+(Math.floor(Math.random() * 100) + 0)+"/600/400"} alt="..." /></div>
                                 <div className="col-lg-6">
-                                    <h2 className="fw-bolder">Growth &amp; beyond</h2>
-                                    <p className="lead fw-normal text-muted mb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                        Iusto est, ut esse a labore aliquam beatae expedita. Blanditiis impedit numquam libero molestiae
-                                        et fugit cupiditate, quibusdam expedita, maiores eaque quisquam.</p>
+                                    <h2 className="fw-bolder">{this.state.content.section1.title}</h2>
+                                    <p className="lead fw-normal text-muted mb-0">{this.state.content.section1.description}</p>
                                 </div>
                               </> }
                           </div>
@@ -117,34 +152,17 @@ class About extends Component{
                                     </div>
                                 </div>
                             </> : <>
-                            <div className="col mb-5 mb-5 mb-xl-0">
-                                <div className="text-center">
-                                    <img className="img-fluid rounded-circle mb-4 px-4" src="https://dummyimage.com/150x150/ced4da/6c757d" alt="..." />
-                                    <h5 className="fw-bolder">Ibbie Eckart</h5>
-                                    <div className="fst-italic text-muted">Founder &amp; CEO</div>
-                                </div>
-                            </div>
-                            <div className="col mb-5 mb-5 mb-xl-0">
-                                <div className="text-center">
-                                    <img className="img-fluid rounded-circle mb-4 px-4" src="https://dummyimage.com/150x150/ced4da/6c757d" alt="..." />
-                                    <h5 className="fw-bolder">Arden Vasek</h5>
-                                    <div className="fst-italic text-muted">CFO</div>
-                                </div>
-                            </div>
-                            <div className="col mb-5 mb-5 mb-sm-0">
-                                <div className="text-center">
-                                    <img className="img-fluid rounded-circle mb-4 px-4" src="https://dummyimage.com/150x150/ced4da/6c757d" alt="..." />
-                                    <h5 className="fw-bolder">Toribio Nerthus</h5>
-                                    <div className="fst-italic text-muted">Operations Manager</div>
-                                </div>
-                            </div>
-                            <div className="col mb-5">
-                                <div className="text-center">
-                                    <img className="img-fluid rounded-circle mb-4 px-4" src="https://dummyimage.com/150x150/ced4da/6c757d" alt="..." />
-                                    <h5 className="fw-bolder">Malvina Cilla</h5>
-                                    <div className="fst-italic text-muted">CTO</div>
-                                </div>
-                            </div>
+                                {this.state.content.teams.map((item,index)=>{
+                                    return (
+                                        <div key={index} className={this.getClassName(index)}>
+                                            <div className="text-center">
+                                                <img className="img-fluid rounded-circle mb-4 px-4" width="150" src={this.getPeopleImage()} alt="..." />
+                                                <h5 className="fw-bolder">{item.name}</h5>
+                                                <div className="fst-italic text-muted">{item.positionName}</div>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
                             </> }
                         </div>
                     </div>
@@ -155,4 +173,4 @@ class About extends Component{
 
 }
 
-export default About
+export default withRouter(About)
