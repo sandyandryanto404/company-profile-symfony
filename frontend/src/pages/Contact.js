@@ -62,22 +62,24 @@ class Contact extends Component{
     }
 
     async submitForm(fields){
-        this.setState({ loadingSubmit: true })
-        await PageService.message(fields).then((response) => {
-            setTimeout(() => { 
-                this.setState({
-                    fields: {
-                        name: "",
-                        email: "",
-                        subject: "",
-                        message: ""
-                    },
-                    loadingSubmit: false
-                })
-            }, 1500)
-        }).catch((error) => {
-            console.log(error)
-        })
+        if(Object.keys(this.state.errors).length === 0){
+            this.setState({ loadingSubmit: true })
+            await PageService.message(fields).then((response) => {
+                setTimeout(() => { 
+                    this.setState({
+                        fields: {
+                            name: "",
+                            email: "",
+                            subject: "",
+                            message: ""
+                        },
+                        loadingSubmit: false
+                    })
+                }, 1500)
+            }).catch((error) => {
+                console.log(error)
+            })
+        }
     }
 
     render(){
