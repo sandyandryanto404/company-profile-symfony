@@ -61,36 +61,38 @@ class Home extends Component{
     }
 
     async submitForm(fields){
-        this.setState({
-            loadingSubscribe: true,
-            message: ""
-        })
-        await PageService.subscribe(fields).then(() => {
-            setTimeout(() => { 
+        if(Object.keys(this.state.errors).length === 0){
+            this.setState({
+                loadingSubscribe: true,
+                message: ""
+            })
+            await PageService.subscribe(fields).then(() => {
+                setTimeout(() => { 
+                    this.setState({
+                        loadingSubscribe: false,
+                        fields: {
+                            email: "",
+                        },
+                        message:"Thank for subscribing to our newsletter."
+                    })
+                }, 1500)
+            }).catch((error) => {
                 this.setState({
                     loadingSubscribe: false,
                     fields: {
                         email: "",
                     },
-                    message:"Thank for subscribing to our newsletter."
+                    message:""
                 })
-            }, 1500)
-        }).catch((error) => {
-            this.setState({
-                loadingSubscribe: false,
-                fields: {
-                    email: "",
-                },
-                message:""
+                let resMessage =
+                    (error.response &&
+                      error.response.data &&
+                      error.response.data.message) ||
+                    error.message ||
+                    error.toString();
+                console.log(resMessage)
             })
-            let resMessage =
-                (error.response &&
-                  error.response.data &&
-                  error.response.data.message) ||
-                error.message ||
-                error.toString();
-            console.log(resMessage)
-        })
+        }
     }
 
     serviceClassName(index){
