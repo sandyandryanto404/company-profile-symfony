@@ -1,20 +1,83 @@
 import { Component } from "react"
 import { ShimmerThumbnail , ShimmerTitle  } from "react-shimmer-effects"
+import { withRouter } from '../helpers/with-router';
+import PageService from "../services/page";
+import ReactFormInputValidation from "react-form-input-validation";
 
 class Contact extends Component{
 
     constructor() {
         super();
         this.state = { 
-            loading: true
+            loadingSubmit:false,
+            loading: true,
+            content: {},
+            fields: {
+                name: "",
+                email: "",
+                subject: "",
+                message: ""
+            },
+            errors: {}
+        }
+        this.form = new ReactFormInputValidation(this);
+        this.form.useRules({
+            name: "required",
+            email: "email|required",
+            subject: "required",
+            message: "required"
+        });
+        this.form.onformsubmit = (fields) => {
+            this.submitForm(fields);
         }
     }
 
-    componentDidMount(){
+    componentWillMount(){
         document.title = 'Contact | ' + process.env.REACT_APP_TITLE
-        setTimeout(() => {
-            this.setState({ loading: false })
-        }, 3000)
+        this.pingConnection()
+    }
+
+    async pingConnection(){
+        await PageService.ping().then(() => {
+            setTimeout(() => { 
+                this.loadContent()
+            }, 1500)
+        }).catch((error) => {
+            console.log(error)
+            this.props.router.navigate("/unavailable")
+        })
+    }
+
+    async loadContent(){
+        await PageService.contact().then((response) => {
+            setTimeout(() => { 
+                this.setState({
+                    content: response.data,
+                    loading: false
+                })
+            }, 1500)
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+
+    async submitForm(fields){
+        this.setState({ loadingSubmit: true })
+        await PageService.message(fields).then((response) => {
+            setTimeout(() => { 
+                this.setState({
+                    fields: {
+                        name: "",
+                        email: "",
+                        subject: "",
+                        message: ""
+                    },
+                    loadingSubmit: false
+                })
+            }, 1500)
+        }).catch((error) => {
+            console.log(error)
+        })
     }
 
     render(){
@@ -38,31 +101,71 @@ class Contact extends Component{
                                 <div className="row gx-5 justify-content-center">
                                     <div className="col-lg-8 col-xl-6">
                                     
-                                            <form id="contactForm" data-sb-form-api-token="API_TOKEN">
+                                            <form id="contactForm" noValidate autoComplete="off" onSubmit={this.form.handleSubmit} data-sb-form-api-token="API_TOKEN">
                                                 
                                                 <div className="form-floating mb-3">
-                                                    <input className="form-control" id="name" type="text" placeholder="Enter your name..." data-sb-validations="required" />
+                                                        <input
+                                                            type="text"
+                                                            name="name"
+                                                            className={this.state.errors.name ? "form-control is-invalid" : "form-control"}
+                                                            onBlur={this.form.handleBlurEvent}
+                                                            onChange={this.form.handleChangeEvent}
+                                                            value={this.state.fields.name}
+                                                            placeholder="Enter your name"
+                                                        />
                                                     <label htmlFor="name">Full name</label>
-                                                    <div className="invalid-feedback" data-sb-feedback="name:required">A name is required.</div>
+                                                    <div className="invalid-feedback">
+                                                        {this.state.errors.name ? this.state.errors.name : ""}
+                                                    </div>
                                                 </div>
-                                            
+
                                                 <div className="form-floating mb-3">
-                                                    <input className="form-control" id="email" type="email" placeholder="name@example.com" data-sb-validations="required,email" />
+                                                        <input
+                                                            type="email"
+                                                            name="email"
+                                                            className={this.state.errors.email ? "form-control is-invalid" : "form-control"}
+                                                            onBlur={this.form.handleBlurEvent}
+                                                            onChange={this.form.handleChangeEvent}
+                                                            value={this.state.fields.email}
+                                                            placeholder="name@example.com"
+                                                        />
                                                     <label htmlFor="email">Email address</label>
-                                                    <div className="invalid-feedback" data-sb-feedback="email:required">An email is required.</div>
-                                                    <div className="invalid-feedback" data-sb-feedback="email:email">Email is not valid.</div>
+                                                    <div className="invalid-feedback">
+                                                        {this.state.errors.email ? this.state.errors.email : ""}
+                                                    </div>
                                                 </div>
                                             
                                                 <div className="form-floating mb-3">
-                                                    <input className="form-control" id="phone" type="tel" placeholder="(123) 456-7890" data-sb-validations="required" />
-                                                    <label htmlFor="phone">Phone number</label>
-                                                    <div className="invalid-feedback" data-sb-feedback="phone:required">A phone number is required.</div>
+                                                        <input
+                                                            type="text"
+                                                            name="subject"
+                                                            className={this.state.errors.subject ? "form-control is-invalid" : "form-control"}
+                                                            onBlur={this.form.handleBlurEvent}
+                                                            onChange={this.form.handleChangeEvent}
+                                                            value={this.state.fields.subject}
+                                                            placeholder="Enter your subject"
+                                                        />
+                                                    <label htmlFor="subject">Subject</label>
+                                                    <div className="invalid-feedback">
+                                                        {this.state.errors.subject ? this.state.errors.subject : ""}
+                                                    </div>
                                                 </div>
-                                            
+
                                                 <div className="form-floating mb-3">
-                                                    <textarea className="form-control" id="message" type="text" placeholder="Enter your message here..." style={{height: '10em'}} data-sb-validations="required"></textarea>
+                                                    <textarea 
+                                                        name="message"
+                                                        className={this.state.errors.message ? "form-control is-invalid" : "form-control"}
+                                                        onBlur={this.form.handleBlurEvent}
+                                                        onChange={this.form.handleChangeEvent}
+                                                        value={this.state.fields.message}
+                                                        placeholder="Enter your message"
+                                                        style={{height: '10em'}}
+                                                    >
+                                                    </textarea>
                                                     <label htmlFor="message">Message</label>
-                                                    <div className="invalid-feedback" data-sb-feedback="message:required">A message is required.</div>
+                                                    <div className="invalid-feedback">
+                                                        {this.state.errors.message ? this.state.errors.message : ""}
+                                                    </div>
                                                 </div>
                                                 
                                                 <div className="d-none" id="submitSuccessMessage">
@@ -76,7 +179,11 @@ class Contact extends Component{
                                                 
                                                 <div className="d-none" id="submitErrorMessage"><div className="text-center text-danger mb-3">Error sending message!</div></div>
                                             
-                                                <div className="d-grid"><button className="btn btn-primary btn-lg disabled" id="submitButton" type="submit">Submit</button></div>
+                                                <div className="d-grid">
+                                                    <button disabled={this.state.loadingSubmit} className="btn btn-primary btn-lg" id="submitButton" type="submit">
+                                                        <i className={ this.state.loadingSubmit ? 'spinner-border spinner-border-sm me-1' : 'bi bi-envelope me-1' }></i>Send Message
+                                                    </button>
+                                                </div>
                                             </form>
 
                                     </div>
@@ -130,4 +237,4 @@ class Contact extends Component{
 
 }
 
-export default Contact
+export default withRouter(Contact)

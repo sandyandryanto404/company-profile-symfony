@@ -1,20 +1,47 @@
+import { withRouter } from '../../helpers/with-router';
 import { Component } from "react"
 import { ShimmerThumbnail, ShimmerText    } from "react-shimmer-effects"
+import { NavLink  } from "react-router-dom"
+import PortfolioService from "../../services/portfolio";
+import PageService from "../../services/page"
 
 class List extends Component{
 
     constructor() {
         super();
         this.state = { 
-            loading: true
+            loading: true,
+            content: {}
         }
     }
 
-    componentDidMount(){
+    componentWillMount(){
         document.title = 'Portfolio | ' + process.env.REACT_APP_TITLE
-        setTimeout(() => {
-            this.setState({ loading: false })
-        }, 3000)
+        this.pingConnection()
+    }
+
+    async pingConnection(){
+        await PageService.ping().then(() => {
+            setTimeout(() => { 
+                this.loadContent()
+            }, 1500)
+        }).catch((error) => {
+            console.log(error)
+            this.props.router.navigate("/unavailable")
+        })
+    }
+
+    async loadContent(){
+        await PortfolioService.list().then((response) => {
+            setTimeout(() => { 
+                this.setState({
+                    content: response.data,
+                    loading: false
+                })
+            }, 1500)
+        }).catch((error) => {
+            console.log(error)
+        })
     }
 
     render(){
@@ -56,31 +83,20 @@ class List extends Component{
 
                             
                             </> : <>
+
+                                {this.state.content.portfolios.map((item,index)=>{
+                                    return (
+                                        <div key={index} className="col-lg-6">
+                                            <div className="position-relative mb-5">
+                                                <img className="img-fluid rounded-3 mb-3" src={"https://picsum.photos/id/"+(Math.floor(Math.random() * 100) + 0)+"/600/400"} alt="..." />
+                                                <NavLink className="h3 fw-bolder text-decoration-none link-dark stretched-link" to={"/portfolio/"+item.id}>{item.title}</NavLink>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
                                 
-                                <div className="col-lg-6">
-                                    <div className="position-relative mb-5">
-                                        <img className="img-fluid rounded-3 mb-3" src="https://dummyimage.com/600x400/343a40/6c757d" alt="..." />
-                                        <a className="h3 fw-bolder text-decoration-none link-dark stretched-link" href="#!">Project name</a>
-                                    </div>
-                                </div>
-                                <div className="col-lg-6">
-                                    <div className="position-relative mb-5">
-                                        <img className="img-fluid rounded-3 mb-3" src="https://dummyimage.com/600x400/343a40/6c757d" alt="..." />
-                                        <a className="h3 fw-bolder text-decoration-none link-dark stretched-link" href="#!">Project name</a>
-                                    </div>
-                                </div>
-                                <div className="col-lg-6">
-                                    <div className="position-relative mb-5 mb-lg-0">
-                                        <img className="img-fluid rounded-3 mb-3" src="https://dummyimage.com/600x400/343a40/6c757d" alt="..." />
-                                        <a className="h3 fw-bolder text-decoration-none link-dark stretched-link" href="#!">Project name</a>
-                                    </div>
-                                </div>
-                                <div className="col-lg-6">
-                                    <div className="position-relative">
-                                        <img className="img-fluid rounded-3 mb-3" src="https://dummyimage.com/600x400/343a40/6c757d" alt="..." />
-                                        <a className="h3 fw-bolder text-decoration-none link-dark stretched-link" href="#!">Project name</a>
-                                    </div>
-                                </div>
+                                
+                                
 
                             </> }
                         </div>
@@ -98,4 +114,4 @@ class List extends Component{
 
 }
 
-export default List
+export default withRouter(List)

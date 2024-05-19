@@ -128,7 +128,7 @@ class PageController extends BaseController
     public function faq() : JsonResponse 
     {
         $faqs1 = $this->faq->findAllBySort("<=", 5);
-        $faqs2 = $this->faq->findAllBySort("<=", 5);
+        $faqs2 = $this->faq->findAllBySort(">", 5);
         $response = array(
             "faqs1"=> $this->responseData($faqs1),
             "faqs2"=> $this->responseData($faqs2)
