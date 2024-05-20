@@ -2,6 +2,8 @@ import { Component } from "react"
 import { ShimmerThumbnail } from "react-shimmer-effects"
 import { Tooltip } from 'react-tooltip'
 import { withRouter } from '../../helpers/with-router';
+import ReactFormInputValidation from "react-form-input-validation";
+import AuthService from "../../services/auth";
 
 class ResetPassword extends Component{
 
@@ -9,7 +11,59 @@ class ResetPassword extends Component{
         super();
         this.state = { 
             loading: true,
-            auth: localStorage.getItem("token") !== null
+            auth: localStorage.getItem("token") !== null,
+            fields: {
+                email: "",
+                password: "",
+                password_confirmation: ""
+            },
+            success:"",
+            message:"",
+            errors: {}
+        }
+        this.form = new ReactFormInputValidation(this);
+        this.form.useRules({
+            email: "required|email",
+            password: "required|min:8|confirmed",
+            password_confirmation: "required"
+        });
+        this.form.onformsubmit = (fields) => {
+            this.setState({
+                success:"",
+                message:"",
+                loadingSubmit: true,
+                fields: {
+                    email: "",
+                    password: "",
+                    password_confirmation: ""
+                }
+            });
+            this.submitForm(fields);
+        }
+    }
+
+    async submitForm(fields){
+        if(Object.keys(this.state.errors).length === 0){
+            let token = this.props.router.params.token
+            await AuthService.resetPassword(token, fields).then((result) => {
+                let data = result.data
+                let success = data.success
+                this.setState({
+                    loadingSubmit: false,
+                    success: success
+                })
+                setTimeout(() => { 
+                    this.props.router.navigate("/auth/login")
+                }, 2000)
+            }).catch((error) => {
+                let response = error.response
+                let data = response.data
+                let message = data.errors
+                this.setState({
+                    loadingSubmit: false,
+                    message: message
+                })
+            })
         }
     }
 
@@ -45,30 +99,88 @@ class ResetPassword extends Component{
                                     </div>
                                     <div className="card-body">
                                         <h1 className="text-center mb-2 auth-icon text-primary"><i className="bi bi-person-circle"></i></h1>
-                                        <form action="" method="POST" autoComplete="off">
+                                        <form noValidate onSubmit={this.form.handleSubmit} method="POST" autoComplete="off">
                                             <p className="card-text fw-bold text-muted text-center mb-4">
                                                 <small>Please complete the form below.</small>
                                             </p>
+
+                                            { this.state.message ? <>
+                                                <div className="alert alert-danger" role="alert">
+                                                    <small>{this.state.message}</small>
+                                                </div>
+                                            </> : <></> }
+
+                                            { this.state.success ? <>
+                                                <div className="alert alert-success" role="alert">
+                                                    <small>{this.state.success}</small>
+                                                </div>
+                                            </> : <></> }
+
                                             <div className="input-group mb-3">
-                                                <input type="email" className="form-control" placeholder="Email Address" />
+                                                
+                                                <input
+                                                    type="email"
+                                                    name="email"
+                                                    className={this.state.errors.email ? "form-control is-invalid" : "form-control"}
+                                                    placeholder="Email Address"
+                                                    onBlur={this.form.handleBlurEvent}
+                                                    onChange={this.form.handleChangeEvent}
+                                                    value={this.state.fields.email}
+                                                    readOnly={this.state.loadingSubmit}
+                                                />
+
                                                 <span className="input-group-text" id="basic-addon1">
                                                     <i className="bi bi-envelope"></i>
                                                 </span>
+
+                                                <div className="invalid-feedback">
+                                                    {this.state.errors.email ? this.state.errors.email : ""}
+                                                </div>
+
                                             </div>
                                             <div className="input-group mb-3">
-                                                <input type="password" className="form-control" placeholder="New Password" />
+                                                
+                                                <input
+                                                    type="password"
+                                                    name="password"
+                                                    className={this.state.errors.password ? "form-control is-invalid" : "form-control"}
+                                                    placeholder="Your Password"
+                                                    onBlur={this.form.handleBlurEvent}
+                                                    onChange={this.form.handleChangeEvent}
+                                                    value={this.state.fields.password}
+                                                    readOnly={this.state.loadingSubmit}
+                                                />
+
                                                 <span className="input-group-text" id="basic-addon1">
                                                     <i className="bi bi-key"></i>
                                                 </span>
+                                                <div className="invalid-feedback">
+                                                    {this.state.errors.password ? this.state.errors.password : ""}
+                                                </div>
                                             </div>
                                             <div className="input-group mb-3">
-                                                <input type="password" className="form-control" placeholder="Confirm Password" />
+                                                
+                                                <input
+                                                    type="password"
+                                                    name="password_confirmation"
+                                                    className={this.state.errors.password_confirmation ? "form-control is-invalid" : "form-control"}
+                                                    placeholder="Confirm Password"
+                                                    onBlur={this.form.handleBlurEvent}
+                                                    onChange={this.form.handleChangeEvent}
+                                                    value={this.state.fields.password_confirmation}
+                                                    readOnly={this.state.loadingSubmit}
+                                                />
+
                                                 <span className="input-group-text" id="basic-addon1">
                                                     <i className="bi bi-key"></i>
                                                 </span>
+                                                <div className="invalid-feedback">
+                                                    {this.state.errors.password_confirmation ? this.state.errors.password_confirmation : ""}
+                                                </div>
                                             </div>
-                                            <button type="submit"  className="btn btn-primary w-100">
-                                                <i className="bi bi-save me-1"></i> Set Password
+
+                                            <button type="submit" disabled={this.state.loadingSubmit}  className="btn btn-primary w-100">
+                                                <i className={this.state.loadingSubmit ? 'spinner-border spinner-border-sm me-1' : 'bi bi-save me-1'}></i> Set Password
                                                 <Tooltip anchorSelect=".btn-primary" content="Update New Password" />
                                             </button>
                                         </form>

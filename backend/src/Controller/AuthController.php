@@ -86,7 +86,7 @@ class AuthController extends BaseController
         $user = new User();
         $user->setEmail($email);
         $user->setPassword($hash);
-        $user->setStatus(0);
+        $user->setStatus(1);
         $user->setConfirmToken($token);
         $user->setRoles(["ROLE_USER"]);
         $this->userRepo->saveOrUpdate($user);

@@ -14,8 +14,11 @@ class Navigation extends Component{
     }
 
     handleLogout(e){
-        window.location.href = "/"
         e.preventDefault()
+        localStorage.removeItem("token")
+        setTimeout(() => { 
+            window.location.href = "/"
+        }, 1500)
     }
 
     componentDidMount(){

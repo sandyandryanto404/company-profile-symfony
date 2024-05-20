@@ -3,14 +3,62 @@ import { NavLink  } from "react-router-dom"
 import { ShimmerThumbnail } from "react-shimmer-effects"
 import { Tooltip } from 'react-tooltip'
 import { withRouter } from '../../helpers/with-router';
+import ReactFormInputValidation from "react-form-input-validation";
+import AuthService from "../../services/auth";
 
 class Login extends Component{
 
     constructor() {
         super();
         this.state = { 
+            loadingSubmit: false,
             loading: true,
-            auth: localStorage.getItem("token") !== null
+            auth: localStorage.getItem("token") !== null,
+            fields: {
+                email: "",
+                password: "",
+                remember_me: ""
+            },
+            message:"",
+            errors: {}
+        }
+        this.form = new ReactFormInputValidation(this);
+        this.form.useRules({
+            email: "required",
+            password: "required",
+            remember: "string"
+        });
+        this.form.onformsubmit = (fields) => {
+            this.setState({
+                message: "",
+                loadingSubmit: true
+            });
+            this.submitForm(fields);
+        }
+    }
+
+    async submitForm(fields){
+        if(Object.keys(this.state.errors).length === 0){
+            await AuthService.login(fields).then((result) => {
+                let data = result.data
+                let token = data.token
+                setTimeout(() => {
+                    this.setState({
+                        loadingSubmit: false,
+                        message: ""
+                    })
+                    localStorage.setItem("token", token)
+                    window.location.href = "/"
+                }, 2000)
+            }).catch((error) => {
+                let response = error.response
+                let data = response.data
+                let message = data.errors
+                this.setState({
+                    loadingSubmit: false,
+                    message: message
+                })
+            })
         }
     }
 
@@ -46,26 +94,62 @@ class Login extends Component{
                                     </div>
                                     <div className="card-body">
                                         <h1 className="text-center mb-2 auth-icon text-primary"><i className="bi bi-person-circle"></i></h1>
-                                        <form action="" method="POST" autoComplete="off">
+
+                                        <form noValidate onSubmit={this.form.handleSubmit} method="POST" autoComplete="off">
                                             <p className="card-text fw-bold text-muted text-center mb-4">
                                                 <small>Please complete the form below.</small>
                                             </p>
+
+                                            { this.state.message ? <>
+                                                <div className="alert alert-danger" role="alert">
+                                                    <small>{this.state.message}</small>
+                                                </div>
+                                            </> : <></> }
+
                                             <div className="input-group mb-3">
-                                                <input type="email" className="form-control" placeholder="Email Address" />
+                                                
+                                                <input
+                                                    type="email"
+                                                    name="email"
+                                                    className={this.state.errors.email ? "form-control is-invalid" : "form-control"}
+                                                    placeholder="Email Address"
+                                                    onBlur={this.form.handleBlurEvent}
+                                                    onChange={this.form.handleChangeEvent}
+                                                    value={this.state.fields.email}
+                                                    readOnly={this.state.loadingSubmit}
+                                                />
+
                                                 <span className="input-group-text" id="basic-addon1">
                                                     <i className="bi bi-envelope"></i>
                                                 </span>
+                                                <div className="invalid-feedback">
+                                                    {this.state.errors.email ? this.state.errors.email : ""}
+                                                </div>
                                             </div>
                                             <div className="input-group mb-3">
-                                                <input type="password" className="form-control" placeholder="Password" />
+                                                
+                                                <input
+                                                    type="password"
+                                                    name="password"
+                                                    className={this.state.errors.password ? "form-control is-invalid" : "form-control"}
+                                                    placeholder="Your Password"
+                                                    onBlur={this.form.handleBlurEvent}
+                                                    onChange={this.form.handleChangeEvent}
+                                                    value={this.state.fields.password}
+                                                    readOnly={this.state.loadingSubmit}
+                                                />
+
                                                 <span className="input-group-text" id="basic-addon1">
                                                     <i className="bi bi-key"></i>
                                                 </span>
+                                                <div className="invalid-feedback">
+                                                    {this.state.errors.password ? this.state.errors.password : ""}
+                                                </div>
                                             </div>
                                             <div className="clearfix">
                                                 <div className="float-start">
                                                     <div className="mb-3 form-check">
-                                                        <input type="checkbox" name="remember" id="remember" className="form-check-input" />
+                                                        <input type="checkbox" name="remember_me" id="remember_me" className="form-check-input" />
                                                         <label className="form-check-label" htmlFor="exampleCheck1">Remember Me</label>
                                                     </div>
                                                 </div>
@@ -76,8 +160,8 @@ class Login extends Component{
                                                     <Tooltip anchorSelect=".forgot-password-link" content="Forgot Password service that allows the user to request a password reset." />
                                                 </div>
                                             </div>
-                                            <button type="submit"  className="btn btn-primary w-100">
-                                                <i className="bi bi-arrow-right me-1"></i> Sign In
+                                            <button type="submit" disabled={this.state.loadingSubmit}  className="btn btn-primary w-100">
+                                                <i className={ this.state.loadingSubmit ? 'spinner-border spinner-border-sm me-1' : 'bi bi-arrow-right me-1' }></i> Sign In
                                                 <Tooltip anchorSelect=".btn-primary" content="Users enter their email and password in the designated fields to access their accounts" />
                                             </button>
                                             <div className="mt-3 text-center">
