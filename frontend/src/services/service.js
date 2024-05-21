@@ -11,7 +11,7 @@
 
 import axios from "axios"
 
-export default function service(upload) {
+export default function service(upload, auth) {
 
     let baseURL = process.env.REACT_APP_BACKEND_URL
     let headers = {}
@@ -27,7 +27,7 @@ export default function service(upload) {
     }
 
 
-    if (localStorage.getItem('token') !== null) {
+    if (auth) {
         headers.Authorization = 'Bearer ' + localStorage.getItem('token')
     }
 
