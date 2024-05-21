@@ -59,7 +59,7 @@
 		<ol type="1">
 			<li>MySQL 5.7 / Maria DB 11.3</li>
 			<li>PHP 8.3 
-				<p>upload_max_filesize=100M (as per your need), post_max_size = 100M (as per your need)</p>
+				<small>upload_max_filesize=100M (as per your need), post_max_size = 100M (as per your need)</small>
 			</li>
 			<li>Composer 2.7</li>
 			<li>Symfony 6.4 for REST API </li>
