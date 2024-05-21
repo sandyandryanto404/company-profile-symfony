@@ -15,6 +15,7 @@ class Profile extends Component{
             message: "",
             success:"",
             loadingSubmit: false,
+            loadingFile: false,
             loading: true,
             auth: localStorage.getItem("token") !== null,
             countries: [],
@@ -47,6 +48,7 @@ class Profile extends Component{
         this.form.onformsubmit = (fields) => {
             this.submitForm(fields);
         }
+        this.handleFileChange = this.handleFileChange.bind(this);
     }
 
     componentDidMount(){
@@ -106,6 +108,12 @@ class Profile extends Component{
             let data = result.data
             let profile = data.data
             let countries = country.names().sort()
+            let defaultImage = this.state.imgPreview
+
+            if(profile.image){
+                defaultImage = process.env.REACT_APP_BACKEND_URL+"/"+profile.image
+            }
+
             this.setState({
                 fields: {
                     email: profile.email,
@@ -118,7 +126,8 @@ class Profile extends Component{
                     about_me: profile.aboutMe
                 },
                 countries: countries,
-                loading: false
+                loading: false,
+                imgPreview: defaultImage
             })
         }).catch((error) => {
             console.log(error)
@@ -140,6 +149,37 @@ class Profile extends Component{
             fields: fields
         })
       }
+
+    async handleFileChange (e) {
+        if (e.target.files) {
+            let formData = new FormData()
+            formData.append("file", e.target.files[0]);
+            this.setState({ loadingFile: true })
+            await AccountService.upload(formData).then((result) => { 
+                setTimeout(() => {
+                    let defaultImage  = this.state.imgPreview
+                    if(result.data.image){
+                        defaultImage = process.env.REACT_APP_BACKEND_URL+"/"+result.data.image
+                    }
+                    this.setState({
+                        imgPreview: defaultImage,
+                        loadingFile: false
+                    })
+                }, 2000)
+            }).catch((error) => {
+                let message =
+                    (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                    error.message ||
+                    error.toString()
+                this.setState({
+                    loadingFile: false,
+                    message: message
+                })
+            })
+        }
+    }
 
     render(){
         return (
@@ -175,15 +215,25 @@ class Profile extends Component{
                                         <form noValidate onSubmit={this.form.handleSubmit} method="POST" autoComplete="off">
                                                 <div className="row mt-4 mb-2 justify-content-center align-items-center">
                                                     <div className="col-md-6">
-                                                        <div className="text-center">
-                                                            <h5>
-                                                                <small>Profile Picture</small>
-                                                            </h5>
-                                                            <img className="img-fluid rounded-3" src={this.state.imgPreview} alt="..." />
-                                                        </div>
-                                                        <div className="mb-3 mt-3">
-                                                            <input type="file" className="form-control" id="" placeholder="" name="file_image"/>
-                                                        </div>
+                                                        { this.state.loadingFile ? <>
+
+                                                            <div className="text-center">
+                                                                <ShimmerThumbnail height={200} width={200} rounded />
+                                                            </div>
+                                                        
+                                                        </> : <>
+                                                            
+                                                            <div className="text-center">
+                                                                <h5>
+                                                                    <small>Profile Picture</small>
+                                                                </h5>
+                                                                <img className="img-fluid rounded-3" width={150} src={this.state.imgPreview} alt="..." />
+                                                            </div>
+                                                            <div className="mb-3 mt-3">
+                                                                <input type="file" className="form-control" onChange={this.handleFileChange} id="" placeholder="" name="file_image"/>
+                                                            </div>
+
+                                                        </> }
                                                     </div>
                                                 </div>
                                                 <div className="row">

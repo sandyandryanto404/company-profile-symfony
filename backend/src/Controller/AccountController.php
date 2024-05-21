@@ -59,6 +59,8 @@ class AccountController extends BaseController
                 $user->setImage($result_upload);
                 $this->userRepo->saveOrUpdate($user);
                 $image = $result_upload;
+            }else{
+                dump($_FILES["file"]["tmp_name"]); die();
             }
 
         }

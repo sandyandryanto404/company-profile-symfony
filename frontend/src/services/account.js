@@ -26,7 +26,7 @@ class AccountService {
     }
 
     upload(data){
-        return service(true, true).get("api/account/upload", data)
+        return service(true, true).post("api/account/upload", data)
     }
 
 }
