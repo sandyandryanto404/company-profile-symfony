@@ -15,7 +15,7 @@ class Comment extends Component{
 
     getClasses(comment){
         if(comment.children.length === 0){
-            if(comment.parent_id === null){
+            if(parseInt(comment.parent_id) === 0){
                 return "d-flex mb-4"
             }else{
                 return "d-flex mt-4"
