@@ -64,12 +64,14 @@ class ArticleController extends BaseController
         return $this->respondWithSuccess("ok", [], ["comments"=> $comments]);
     }
 
-    #[Route('api/article/comment/create/{id}', methods: ["GET"], name: 'article_comment_create')]
+    #[Route('api/article/comment/create/{id}', methods: ["POST"], name: 'article_comment_create')]
     public function createComment($id, Request $request)
     {
+        $request = $this->transformJsonBody($request);
+        $article = $this->article->findById($id);
         $user = $this->getUser();
         $comment = new ArticleComment();
-        $comment->setArticle($id);
+        $comment->setArticle($article);
         $comment->setUser($user);
         $comment->setComment($request->get("comment"));
         $comment->setStatus(1);

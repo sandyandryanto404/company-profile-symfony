@@ -2,9 +2,10 @@ import { Component } from "react"
 import { ShimmerCircularImage, ShimmerSectionHeader, ShimmerText, ShimmerThumbnail  } from "react-shimmer-effects"
 import { withRouter } from '../../helpers/with-router';
 import moment from 'moment'
-import { NavLink } from "react-router-dom";
 import ArticleService from "../../services/article";
 import PageService from "../../services/page";
+import Comment from "../../components/Comment"
+import ReactFormInputValidation from "react-form-input-validation";
 
 class Detail extends Component{
 
@@ -13,7 +14,20 @@ class Detail extends Component{
         this.state = { 
             auth: localStorage.getItem("token") !== null,
             loading: true,
-            ontent: {}
+            loadingComment: true,
+            content: {},
+            comments:[],
+            fields: {
+                comment: ""
+            },
+            errors: {}
+        }
+        this.form = new ReactFormInputValidation(this);
+        this.form.useRules({
+            comment: "required"
+        });
+        this.form.onformsubmit = (fields) => {
+            this.submitForm(fields);
         }
     }
 
@@ -22,14 +36,27 @@ class Detail extends Component{
         this.pingConnection()
     }
 
+    async loadComment(id){
+        await ArticleService.commentList(id).then((response) => {
+            this.setState({
+                comments: response.data.comments,
+                loadingComment: false
+            })
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+
     async loadContent(){
         let slug = this.props.router.params.slug
         await ArticleService.detail(slug).then((response) => {
+            let data = response.data
             setTimeout(() => { 
                 this.setState({
-                    content: response.data,
+                    content: data,
                     loading: false
                 })
+                this.loadComment(data.article.id)
             }, 1500)
         }).catch((error) => {
             console.log(error)
@@ -45,6 +72,26 @@ class Detail extends Component{
             console.log(error)
             this.props.router.navigate("/unavailable")
         })
+    }
+
+    async submitForm(fields){
+        if(Object.keys(this.state.errors).length === 0){
+            this.setState({ loadingComment: true })
+            let id = this.state.content.article.id
+            await ArticleService.commentCreate(id, fields).then((response) => {
+                setTimeout(() => { 
+                    this.setState({
+                        fields: {
+                            comment: ""
+                        },
+                        loadingComment: false
+                    })
+                    this.loadComment(id)
+                }, 1500)
+            }).catch((error) => {
+                console.log(error)
+            })
+        }
     }
 
     render(){
@@ -117,49 +164,44 @@ class Detail extends Component{
                                         <ShimmerThumbnail height={150}  rounded />
                                     </> : <>
                                     
-                                        <div className="card bg-light">
-                                            <div className="card-body">
+                                        { this.state.loadingComment ? <>
 
-                                                { this.state.auth ? <>
-                                                    <form className="mb-4"><textarea className="form-control" rows="3" placeholder="Join the discussion and leave a comment!"></textarea></form>
-                                                </> : <></> }
-                                            
-                                                
-                                            
-                                                <div className="d-flex mb-4">
-                                                
-                                                    <div className="flex-shrink-0"><img className="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                                    <div className="ms-3">
-                                                        <div className="fw-bold">Commenter Name</div>
-                                                        If you're going to lead a space frontier, it has to be government; it'll never be private enterprise. Because the space frontier is dangerous, and it's expensive, and it has unquantified risks.
-                                                    
-                                                        <div className="d-flex mt-4">
-                                                            <div className="flex-shrink-0"><img className="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                                            <div className="ms-3">
-                                                                <div className="fw-bold">Commenter Name</div>
-                                                                And under those conditions, you cannot establish a capital-market evaluation of that enterprise. You can't get investors.
+                                            <ShimmerThumbnail height={150}  rounded />
+                                        
+                                        </> : <>
+                                        
+                                            <div className="card bg-light">
+                                                <div className="card-body">
+
+                                                    { this.state.auth ? <>
+                                                        <form  noValidate autoComplete="off" onSubmit={this.form.handleSubmit} className="mb-4">
+                                                            <textarea 
+                                                                name="comment"
+                                                                className={this.state.errors.comment ? "form-control is-invalid" : "form-control"}
+                                                                onBlur={this.form.handleBlurEvent}
+                                                                onChange={this.form.handleChangeEvent}
+                                                                value={this.state.fields.comment}
+                                                                placeholder="Join the discussion and leave a comment!"
+                                                                rows={3}
+                                                            />
+                                                             <div className="invalid-feedback">
+                                                                {this.state.errors.comment ? this.state.errors.comment : ""}
                                                             </div>
-                                                        </div>
-                                                    
-                                                        <div className="d-flex mt-4">
-                                                            <div className="flex-shrink-0"><img className="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                                            <div className="ms-3">
-                                                                <div className="fw-bold">Commenter Name</div>
-                                                                When you put money directly to a problem, it makes a good headline.
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                             <button disabled={this.state.loadingComment} className="btn btn-primary btn-sm mt-2" id="submitButton" type="submit">
+                                                                <i className={ this.state.loadingComment ? 'spinner-border spinner-border-sm me-1' : 'bi bi-chat-right-text me-1' }></i>Send Comment
+                                                            </button>
+                                                        </form>
+
+                                                    </> : <></> }
                                                 
-                                                <div className="d-flex">
-                                                    <div className="flex-shrink-0"><img className="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                                    <div className="ms-3">
-                                                        <div className="fw-bold">Commenter Name</div>
-                                                        When I look at the universe and all the ways the universe wants to kill us, I find it hard to reconcile that with statements of beneficence.
-                                                    </div>
+                                                    {this.state.comments.map((comment, index)=>{
+                                                        return (<Comment key={index} comment={comment} />)
+                                                    })}
+                                            
                                                 </div>
                                             </div>
-                                        </div>
+                                        
+                                        </> }
                                     
                                     </> }
 

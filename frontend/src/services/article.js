@@ -26,7 +26,7 @@ class ArticleService {
     }
 
     commentCreate(id, data){
-        return service().post("api/article/comment/create/"+id, data)
+        return service(false, true).post("api/article/comment/create/"+id, data)
     }
 
 }
