@@ -26,8 +26,9 @@ class ArticleController extends BaseController
     {
         $page = $request->get("page", 1);
         $limit = 3 * $page;
-        $newArticle = $this->article->getNew();
-        $newArticles  = $this->article->getNews($newArticle["id"]);
+        $newArticleSource = $this->article->getNew();
+        $newArticle = $this->article->findBySlug($newArticleSource["slug"]);
+        $newArticles  = $this->article->getNews($newArticle->getId());
         $stories = $this->article->getStories($limit);
         $continueArticle = $this->article->checkContinue($limit);
 

@@ -1,5 +1,10 @@
 import { Component } from "react"
 import { ShimmerCircularImage, ShimmerSectionHeader, ShimmerText, ShimmerThumbnail  } from "react-shimmer-effects"
+import { withRouter } from '../../helpers/with-router';
+import moment from 'moment'
+import { NavLink } from "react-router-dom";
+import ArticleService from "../../services/article";
+import PageService from "../../services/page";
 
 class Detail extends Component{
 
@@ -7,15 +12,39 @@ class Detail extends Component{
         super();
         this.state = { 
             auth: localStorage.getItem("token") !== null,
-            loading: true
+            loading: true,
+            ontent: {}
         }
     }
 
-    componentDidMount(){
+    componentWillMount(){
         document.title = 'Article Details | ' + process.env.REACT_APP_TITLE
-        setTimeout(() => {
-            this.setState({ loading: false })
-        }, 3000)
+        this.pingConnection()
+    }
+
+    async loadContent(){
+        let slug = this.props.router.params.slug
+        await ArticleService.detail(slug).then((response) => {
+            setTimeout(() => { 
+                this.setState({
+                    content: response.data,
+                    loading: false
+                })
+            }, 1500)
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+
+    async pingConnection(){
+        await PageService.ping().then(() => {
+            setTimeout(() => { 
+                this.loadContent()
+            }, 1500)
+        }).catch((error) => {
+            console.log(error)
+            this.props.router.navigate("/unavailable")
+        })
     }
 
     render(){
@@ -30,10 +59,10 @@ class Detail extends Component{
                                     <ShimmerSectionHeader center />
                                 </> : <>
                                     <div className="d-flex align-items-center mt-lg-5 mb-4">
-                                        <img className="img-fluid rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." />
+                                        <img className="img-fluid rounded-circle" width={50} src={this.state.content.gender === 'M' ? '/male.png' : '/female.png'} alt="..." />
                                         <div className="ms-3">
-                                            <div className="fw-bold">Valerie Luna</div>
-                                            <div className="text-muted">News, Business</div>
+                                            <div className="fw-bold">{this.state.content.article.user.firstName} {this.state.content.article.user.lastName}</div>
+                                            <div  className="text-muted">{this.state.content.article.user.aboutMe}</div>
                                         </div>
                                     </div>
                                 </> }
@@ -47,10 +76,15 @@ class Detail extends Component{
                                         { this.state.loading ? <>
                                             <ShimmerText line={5} gap={10} />
                                         </> : <>
-                                            <h1 className="fw-bolder mb-1">Welcome to Blog Post!</h1>
-                                            <div className="text-muted fst-italic mb-2">January 1, 2023</div>
-                                            <a className="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>
-                                            <a className="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>
+                                            <h1 className="fw-bolder mb-1">{this.state.content.article.title}</h1>
+                                            <div className="text-muted fst-italic mb-2">{ moment(this.state.content.article.createdAt.timestamp,'X').fromNow()}</div>
+
+                                            {this.state.content.article.references.map((category, index)=>{
+                                                return (
+                                                    <a key={index} className="badge bg-secondary text-decoration-none link-light" href="#!">{category.name}</a>
+                                                )
+                                            })}
+
                                         </> }
 
                                     </header>
@@ -59,7 +93,7 @@ class Detail extends Component{
                                         { this.state.loading ? <>
                                             <ShimmerThumbnail height={400}  rounded />
                                         </> : <>
-                                            <img className="img-fluid rounded" src="https://dummyimage.com/900x400/ced4da/6c757d.jpg" alt="..." />
+                                            <img className="img-fluid rounded" src={"https://picsum.photos/id/"+(Math.floor(Math.random() * 100) + 0)+"/900/400"} alt="..." />
                                         </> }
                                     </figure>
                                    
@@ -70,12 +104,7 @@ class Detail extends Component{
                                     </> : <>
                                     
                                         <section className="mb-5">
-                                            <p className="fs-5 mb-4">Science is an enterprise that should be cherished as an activity of the free human mind. Because it transforms who we are, how we live, and it gives us an understanding of our place in the universe.</p>
-                                            <p className="fs-5 mb-4">The universe is large and old, and the ingredients for life as we know it are everywhere, so there's no reason to think that Earth would be unique in that regard. Whether of not the life became intelligent is a different question, and we'll see if we find that.</p>
-                                            <p className="fs-5 mb-4">If you get asteroids about a kilometer in size, those are large enough and carry enough energy into our system to disrupt transportation, communication, the food chains, and that can be a really bad day on Earth.</p>
-                                            <h2 className="fw-bolder mb-4 mt-5">I have odd cosmic thoughts every day</h2>
-                                            <p className="fs-5 mb-4">For me, the most fascinating interface is Twitter. I have odd cosmic thoughts every day and I realized I could hold them to myself or share them with people who might be interested.</p>
-                                            <p className="fs-5 mb-4">Venus has a runaway greenhouse effect. I kind of want to know what happened there because we're twirling knobs here on Earth without knowing the consequences of it. Mars once had running water. It's bone dry today. Something bad happened there as well.</p>
+                                            {this.state.content.article.content}
                                         </section>
                                     
                                     </> }
@@ -145,4 +174,4 @@ class Detail extends Component{
 
 }
 
-export default Detail
+export default withRouter(Detail)

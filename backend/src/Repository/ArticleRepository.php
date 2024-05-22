@@ -60,7 +60,6 @@ class ArticleRepository extends ServiceEntityRepository
 
     public function getStories($limit = 1){
         return $this->createQueryBuilder('x')
-            ->select($this->columns())
             ->andWhere('x.status = 1')
             ->setMaxResults($limit)
             ->orderBy('x.id', 'DESC')
@@ -95,7 +94,6 @@ class ArticleRepository extends ServiceEntityRepository
 
     public function findBySlug($slug){
         return $this->createQueryBuilder('x')
-            ->select($this->columns())
             ->andWhere('x.slug = :val')
             ->setParameter('val', $slug)
             ->innerJoin("x.user", "u")
